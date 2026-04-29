@@ -2,6 +2,61 @@
    main.js — Tau Gamma Phi Website Interactivity
    ============================================================ */
 
+/* ---- HERO BACKGROUND SLIDER ---- */
+function initHeroSlider() {
+  const track = document.getElementById('heroBgTrack');
+  const indicatorsWrap = document.getElementById('heroIndicators');
+  if (!track) return;
+
+  const slides = track.querySelectorAll('.hero-bg-slide');
+  const count = slides.length;
+  let current = 0;
+
+  // Build indicators
+  indicatorsWrap.innerHTML = '';
+  slides.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.className = 'hero-indicator' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goHero(i);
+    indicatorsWrap.appendChild(dot);
+  });
+
+  function goHero(idx) {
+    // Fade out current, fade in next
+    slides[current].style.opacity = '0';
+    slides[current].style.position = 'absolute';
+    slides[current].style.inset = '0';
+
+    current = idx;
+    slides.forEach((s, i) => {
+      s.style.opacity = i === current ? '1' : '0';
+      s.style.position = i === current ? 'relative' : 'absolute';
+    });
+
+    indicatorsWrap.querySelectorAll('.hero-indicator').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  // Set initial styles
+  slides.forEach((s, i) => {
+    s.style.transition = 'opacity 1.2s ease';
+    s.style.minWidth = '100%';
+    s.style.height = '100%';
+    s.style.backgroundSize = 'cover';
+    s.style.backgroundPosition = 'center';
+    if (i !== 0) {
+      s.style.opacity = '0';
+      s.style.position = 'absolute';
+      s.style.inset = '0';
+    }
+  });
+  track.style.position = 'relative';
+
+  // Auto advance every 5 seconds
+  setInterval(() => goHero((current + 1) % count), 5000);
+}
+
 /* ---- PHOTO SLIDERS ---- */
 const sliderState = {};
 
@@ -42,6 +97,7 @@ function goToSlide(id, idx) {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  initHeroSlider();
   renderMembers();
   initMembersFilter();
   initContactForm();
