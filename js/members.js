@@ -52,7 +52,7 @@ const MEMBERS = [
   { id: 45, name: 'Mark Ian Burgos',       role: 'Brother',                              photo: '' },
   { id: 46, name: 'Alvin Mallari',         role: 'Master Keeper of the Chest',           photo: '' },
   { id: 47, name: 'Jomarie Ermino',        role: 'Brother',                              photo: '' },
-  { id: 48, name: 'Karl Kent Gipa',        role: 'Master Triskelion',                    photo: 'images/members/karlgipa.jpg' },
+  { id: 48, name: 'Kharl Kennett Gipa',        role: 'Master Triskelion',                    photo: 'images/members/karlgipa.jpg' },
   { id: 49, name: 'Wisdom Villareal',      role: 'Brother',                              photo: '' },
   { id: 50, name: 'Jhon Oliber Dela Cruz', role: 'Brother',                              photo: 'images/members/johndelacruz.jpg' },
   { id: 51, name: 'Jhun Refugia',          role: 'Master Triskelion',                    photo: 'images/members/jhunrefugia.jpg' },
