@@ -1,0 +1,222 @@
+/* ===================== CHATBOT CSS ===================== */
+:root {
+  --chat-gold: #D4AF37;
+  --chat-gold-dark: #8B6914;
+  --chat-bg: #111111;
+  --chat-bg-secondary: #1a1a1a;
+  --chat-text: #ffffff;
+  --chat-text-muted: #aaaaaa;
+}
+
+/* Floating Action Button */
+.chatbot-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: var(--chat-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chatbot-toggle:hover {
+  transform: scale(1.1);
+}
+
+.chatbot-toggle svg {
+  width: 30px;
+  height: 30px;
+  fill: #000;
+}
+
+/* Chat Window */
+.chatbot-window {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 380px;
+  max-width: calc(100vw - 60px);
+  height: 500px;
+  max-height: calc(100vh - 150px);
+  background: var(--chat-bg);
+  border: 1px solid var(--chat-gold-dark);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.chatbot-window.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+/* Header */
+.chatbot-header {
+  background: var(--chat-gold);
+  color: #000;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatbot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chatbot-header-info img {
+  width: 30px;
+  height: 30px;
+}
+
+.chatbot-header-info h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.chatbot-close {
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* Messages Area */
+.chatbot-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--chat-gold-dark) transparent;
+}
+
+.chatbot-messages::-webkit-scrollbar {
+  width: 5px;
+}
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background: var(--chat-gold-dark);
+  border-radius: 10px;
+}
+
+.message {
+  max-width: 85%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  position: relative;
+  animation: messageAppear 0.3s ease forwards;
+}
+
+@keyframes messageAppear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.bot {
+  align-self: flex-start;
+  background: var(--chat-bg-secondary);
+  color: var(--chat-text);
+  border-bottom-left-radius: 2px;
+  border-left: 3px solid var(--chat-gold);
+}
+
+.message.user {
+  align-self: flex-end;
+  background: var(--chat-gold);
+  color: #000;
+  border-bottom-right-radius: 2px;
+}
+
+/* Input Area */
+.chatbot-input-area {
+  padding: 15px;
+  background: var(--chat-bg-secondary);
+  border-top: 1px solid #333;
+  display: flex;
+  gap: 10px;
+}
+
+.chatbot-input-area input {
+  flex: 1;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 25px;
+  outline: none;
+  font-family: 'Lato', sans-serif;
+}
+
+.chatbot-input-area input:focus {
+  border-color: var(--chat-gold);
+}
+
+.chatbot-send {
+  background: var(--chat-gold);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.chatbot-send:hover {
+  transform: scale(1.1);
+}
+
+.chatbot-send svg {
+  width: 20px;
+  height: 20px;
+  fill: #000;
+}
+
+/* Suggested Questions */
+.suggested-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.suggest-btn {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--chat-gold-dark);
+  color: var(--chat-gold);
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggest-btn:hover {
+  background: var(--chat-gold);
+  color: #000;
+}
