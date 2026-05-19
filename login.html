@@ -498,12 +498,12 @@
           pictureFile
         });
 
-        // Show nice success modal
-        showOverlayScreen('successScreen');
+        // Set email label on OTP screen and show it
+        document.getElementById("otpEmailSpan").textContent = email;
+        showOverlayScreen('otpScreen');
         
-        // Reset form
-        document.getElementById("registerForm").reset();
-        document.getElementById("avatarPreview").src = "images/asia2logo.png";
+        // Auto focus OTP input box
+        setTimeout(() => document.getElementById("otpCodeInput").focus(), 100);
 
       } catch (error) {
         console.error("Registration fail:", error);
