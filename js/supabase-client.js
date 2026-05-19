@@ -88,7 +88,6 @@ async function registerUser({ email, password, username, name, tbirth, alias, ba
   }
 
   // 1. Sign Up in Supabase Auth
-  // We save all registration parameters in metadata so we can write them to public.profiles after OTP verification!
   const { data, error } = await client.auth.signUp({
     email,
     password,
@@ -96,7 +95,7 @@ async function registerUser({ email, password, username, name, tbirth, alias, ba
       data: {
         username: username.toLowerCase().trim(),
         name: name.trim(),
-        tbirth: tbirth, // Triskelion Birth (initiation date)
+        tbirth: tbirth,
         alias: alias.trim(),
         batchname: batchname.trim(),
         role: role,
@@ -107,6 +106,36 @@ async function registerUser({ email, password, username, name, tbirth, alias, ba
   });
 
   if (error) throw error;
+  
+  const user = data.user;
+  if (!user) throw new Error("Registration failed. No user returned.");
+
+  // 2. Insert Profile into public.profiles immediately (bypassing OTP)
+  const { error: profileError } = await client.from('profiles').upsert({
+    id: user.id,
+    username: username.toLowerCase().trim(),
+    email: email.trim(),
+    role: role || 'user',
+    status: 'pending_approval',
+    name: name.trim(),
+    tbirth: tbirth,
+    alias: alias.trim() || '',
+    batchname: batchname.trim(),
+    picture_url: pictureUrl || ''
+  });
+
+  if (profileError) {
+    console.error("Error creating public profile:", profileError);
+    throw profileError;
+  }
+
+  // Write log of registration
+  await logSystemAction(user.id, email, 'USER_REGISTER', `User ${name.trim()} successfully registered and is pending admin approval.`);
+
+  // Since we disabled email verification, the user is auto-logged in. 
+  // We must sign them out immediately so they stay in login screen pending approval!
+  await client.auth.signOut();
+
   return data;
 }
 

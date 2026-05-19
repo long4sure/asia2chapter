@@ -483,16 +483,19 @@
           pictureFile
         });
 
-        // Set email label on OTP screen and show it
-        document.getElementById("otpEmailSpan").textContent = email;
-        showOverlayScreen('otpScreen');
+        // Show success and redirect to login panel
+        alert("Registration Successful! Your account is now Pending Approval by the Chapter Admin.");
+        toggleAuthPanel('login');
         
-        // Auto focus OTP input box
-        setTimeout(() => document.getElementById("otpCodeInput").focus(), 100);
+        // Reset form
+        document.getElementById("registerForm").reset();
+        document.getElementById("avatarPreview").src = "images/asia2logo.png";
 
       } catch (error) {
         console.error("Registration fail:", error);
         showError("Registration Failed: " + (error.message || "An unexpected error occurred."));
+      } finally {
+        enableButtons("CREATE PORTAL ACCOUNT");
       }
     }
 
