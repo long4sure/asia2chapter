@@ -39,17 +39,23 @@
         <div class="menu-item" onclick="switchPortalTab('profile')" id="tabBtn_profile">
           <span class="menu-item-icon"><i class="fa-solid fa-user"></i></span> My Profile
         </div>
-        <div class="menu-item" onclick="switchPortalTab('admin')" id="tabBtn_admin" style="display:none; border-left:3px solid #ff4b4b; color:#ff7e7e;">
-          <span class="menu-item-icon"><i class="fa-solid fa-shield-halved"></i></span> Admin Panel
+        <div class="menu-item" onclick="switchPortalTab('admin')" id="tabBtn_admin" style="display:none; border-left:3px solid #ff4b4b; color:#ff7e7e; justify-content: space-between;">
+          <span style="display:flex; align-items:center; gap:14px;">
+            <span class="menu-item-icon"><i class="fa-solid fa-shield-halved"></i></span> Admin Panel
+          </span>
+          <span id="adminSidebarBadge" class="badge action-danger" style="display:none; border-radius:10px; font-size:9px; padding:2px 6px; font-family:'Lato', sans-serif;">0</span>
         </div>
       </nav>
       
       <div class="sidebar-footer" style="display:flex; flex-direction:column; gap:8px;">
-        <div class="menu-item" onclick="handleLogout()" style="color:var(--text-muted);">
+        <div class="menu-item" onclick="openReportIssueModal()" style="color:#ffa726; border: 1px dashed rgba(255, 167, 38, 0.15); background:rgba(255,167,38,0.02); margin-bottom: 4px; padding: 10px 16px;">
+          <span class="menu-item-icon" style="color:#ffa726;"><i class="fa-solid fa-triangle-exclamation"></i></span> Report Issue
+        </div>
+        <div class="menu-item" onclick="handleLogout()" style="color:var(--text-muted); padding: 10px 16px;">
           <span class="menu-item-icon"><i class="fa-solid fa-right-from-bracket"></i></span> Log Out
         </div>
         <div style="font-size: 7.5px; color: var(--gold-light); opacity: 0.5; text-align: center; letter-spacing: 1px; text-transform: uppercase; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); line-height: 1.4;">
-          Designed &amp; Developed<br>by JCMD 2026
+          Designed &amp; Developed<br>by <a href="https://jcmd.online/" target="_blank" style="color:var(--gold); text-decoration:underline;">JCMD 2026</a>
         </div>
       </div>
     </aside>
@@ -239,12 +245,18 @@
           
           <!-- Subtabs bar -->
           <div class="admin-tabs-bar">
-            <button class="admin-tab-btn active" id="adminSubtabBtn_approvals" onclick="switchAdminSubtab('approvals')">Approvals</button>
+            <button class="admin-tab-btn active" id="adminSubtabBtn_approvals" onclick="switchAdminSubtab('approvals')" style="display: inline-flex; align-items: center; gap: 6px;">
+              Approvals
+              <span id="adminApprovalsBadge" class="badge action-logout" style="display:none; border-radius:10px; padding:1px 5px; font-size:8px; font-family:'Lato', sans-serif;">0</span>
+            </button>
             <button class="admin-tab-btn" id="adminSubtabBtn_users" onclick="switchAdminSubtab('users')">Manage Users</button>
             <button class="admin-tab-btn" id="adminSubtabBtn_contributions" onclick="switchAdminSubtab('contributions')">Manage Contributions</button>
             <button class="admin-tab-btn" id="adminSubtabBtn_posts" onclick="switchAdminSubtab('posts')">Manage Posts</button>
             <button class="admin-tab-btn" id="adminSubtabBtn_logs" onclick="switchAdminSubtab('logs')">System Logs</button>
-            <button class="admin-tab-btn" id="adminSubtabBtn_messages" onclick="switchAdminSubtab('messages')">Contact Messages</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_messages" onclick="switchAdminSubtab('messages')" style="display: inline-flex; align-items: center; gap: 6px;">
+              Contact Messages
+              <span id="adminMessagesBadge" class="badge action-login" style="display:none; border-radius:10px; padding:1px 5px; font-size:8px; font-family:'Lato', sans-serif;">0</span>
+            </button>
           </div>
 
           <!-- 4A. SUBTAB: PENDING APPROVALS -->
@@ -467,6 +479,34 @@
     </div>
   </div>
 
+  <!-- REPORT ISSUE MODAL -->
+  <div class="overlay-screen" id="reportIssueModal">
+    <div class="overlay-card" style="text-align: left; max-width: 460px;">
+      <h3 class="overlay-title" style="margin-bottom:10px; color:#ffa726;"><i class="fa-solid fa-triangle-exclamation"></i> REPORT PORTAL ISSUE</h3>
+      <p style="font-size:11px; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">
+        Found a bug, glitch, or membership info error? Report it directly to the Chapter Officers below.
+      </p>
+      <form id="reportIssueForm" onsubmit="handleReportIssueSubmit(event)">
+        <div class="input-group">
+          <label for="reportSubject">Issue Subject</label>
+          <input type="text" id="reportSubject" placeholder="e.g. Profile picture failed to load / Typo in batch name" required>
+        </div>
+        
+        <div class="input-group">
+          <label for="reportMessage">Detailed Description</label>
+          <textarea id="reportMessage" class="post-textarea" style="min-height: 120px;" placeholder="Describe the problem in detail so the administrator can resolve it..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-gold" id="reportIssueBtn" style="width: 100%; margin-top: 12px; background:linear-gradient(135deg, #ffa726, #f57c00); border-color:#e65100;">
+          <span class="btn-text">Send Report to Officers →</span>
+        </button>
+        <button type="button" class="btn-outline" onclick="closeOverlayScreen('reportIssueModal')" style="width: 100%; margin-top: 12px; border-color:transparent; color:var(--text-muted);">
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/supabase-client.js"></script>
@@ -518,6 +558,9 @@
 
         // Load first tab content
         switchPortalTab('feed');
+
+        // Initialize admin notification badges
+        await updateAdminBadges();
 
       } catch (e) {
         console.error("Session load error:", e);
@@ -603,6 +646,7 @@
         loadProfileTab();
       } else if (tabName === 'admin') {
         loadAdminTab();
+        updateAdminBadges();
       }
     }
 
@@ -1031,6 +1075,7 @@
             alert("Registration Rejected & Denied Access.");
           }
           await refreshAdminSubtabData();
+          await updateAdminBadges();
         } catch (error) {
           console.error("Decision fail:", error);
           alert("Action failed: " + error.message);
@@ -1364,11 +1409,25 @@
 
         tbody.innerHTML = messages.map(m => {
           const dateStr = new Date(m.created_at).toLocaleString();
+          
+          let displaySubject = m.subject || "";
+          let issueBadge = "";
+          
+          if (displaySubject.startsWith("PORTAL_ISSUE: ")) {
+            displaySubject = displaySubject.replace("PORTAL_ISSUE: ", "");
+            issueBadge = `<span class="badge action-danger" style="margin-right:6px; background:rgba(255,152,0,0.15); color:#ffa726; border:1px solid rgba(255,167,38,0.25); font-size:8px; font-family:'Lato', sans-serif;">Issue Report</span>`;
+          }
+          
           return `
             <tr>
               <td style="color:var(--white); font-weight:bold;">${m.name}</td>
               <td><a href="mailto:${m.email}" style="color:var(--gold-light); text-decoration:underline;">${m.email}</a></td>
-              <td style="color:var(--gold); font-weight:bold;">${m.subject}</td>
+              <td style="color:var(--gold); font-weight:bold;">
+                <div style="display:flex; align-items:center;">
+                  ${issueBadge}
+                  <span>${displaySubject}</span>
+                </div>
+              </td>
               <td style="white-space:pre-wrap; max-width: 350px;">${m.message}</td>
               <td>${dateStr}</td>
               <td>
@@ -1392,10 +1451,106 @@
           await adminDeleteMessage(messageId, currentUserProfile.id, currentUserProfile.email);
           alert("Contact message successfully deleted.");
           await refreshAdminSubtabData();
+          await updateAdminBadges();
         } catch (error) {
           console.error("Message delete fail:", error);
           alert("Deletion failed: " + error.message);
         }
+      }
+    }
+
+    /* ==========================================
+       ADMIN BADGES & NOTIFICATIONS
+       ========================================== */
+    async function updateAdminBadges() {
+      if (currentUserProfile && currentUserProfile.role === 'admin') {
+        try {
+          const pending = await adminGetPendingRegistrations();
+          const messages = await adminGetAllMessages();
+          
+          const pendingCount = pending ? pending.length : 0;
+          const messagesCount = messages ? messages.length : 0;
+          const totalAlerts = pendingCount + messagesCount;
+          
+          // Update sidebar badge
+          const sidebarBadge = document.getElementById("adminSidebarBadge");
+          if (sidebarBadge) {
+            if (totalAlerts > 0) {
+              sidebarBadge.textContent = totalAlerts;
+              sidebarBadge.style.display = "inline-block";
+            } else {
+              sidebarBadge.style.display = "none";
+            }
+          }
+          
+          // Update subtab approvals badge
+          const approvalsBadge = document.getElementById("adminApprovalsBadge");
+          if (approvalsBadge) {
+            if (pendingCount > 0) {
+              approvalsBadge.textContent = pendingCount;
+              approvalsBadge.style.display = "inline-block";
+            } else {
+              approvalsBadge.style.display = "none";
+            }
+          }
+          
+          // Update subtab messages badge
+          const messagesBadge = document.getElementById("adminMessagesBadge");
+          if (messagesBadge) {
+            if (messagesCount > 0) {
+              messagesBadge.textContent = messagesCount;
+              messagesBadge.style.display = "inline-block";
+            } else {
+              messagesBadge.style.display = "none";
+            }
+          }
+        } catch (e) {
+          console.error("Failed to update admin badges:", e);
+        }
+      }
+    }
+
+    /* ==========================================
+       REPORT PORTAL ISSUE SYSTEM
+       ========================================== */
+    function openReportIssueModal() {
+      document.getElementById("reportSubject").value = "";
+      document.getElementById("reportMessage").value = "";
+      showOverlayScreen("reportIssueModal");
+    }
+
+    async function handleReportIssueSubmit(event) {
+      event.preventDefault();
+      
+      const submitBtn = document.getElementById("reportIssueBtn");
+      const btnText = submitBtn.querySelector(".btn-text");
+      
+      submitBtn.disabled = true;
+      btnText.innerHTML = `<span class="spinner"></span>Sending Report...`;
+
+      const subject = document.getElementById("reportSubject").value.trim();
+      const messageContent = document.getElementById("reportMessage").value.trim();
+
+      const reportData = {
+        name: currentUserProfile.name,
+        email: currentUserProfile.email,
+        subject: `PORTAL_ISSUE: ${subject}`,
+        message: messageContent
+      };
+
+      try {
+        await submitContactMessage(reportData);
+        alert("Salute, Brother! Your issue report has been securely sent to the Chapter Officers.");
+        closeOverlayScreen("reportIssueModal");
+        
+        // Refresh badges if user is admin
+        await updateAdminBadges();
+      } catch (error) {
+        console.error("Report issue failed:", error);
+        alert("Failed to submit issue report: " + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "Send Report to Officers →";
       }
     }
 
