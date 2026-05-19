@@ -469,3 +469,50 @@ footer {
   .hero-title { font-size: clamp(32px, 10vw, 60px); }
   footer { padding: 40px 24px 24px; }
 }
+
+/* ============================================================
+   DATA PRIVACY POLICY OVERLAY MODAL
+   ============================================================ */
+.overlay-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.overlay-screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.overlay-card {
+  background: #141414;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 580px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

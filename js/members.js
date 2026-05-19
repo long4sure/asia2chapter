@@ -57,6 +57,9 @@ const MEMBERS = [
   { id: 50, name: 'Jhon Oliber Dela Cruz', role: 'Brother',                              photo: 'images/members/johndelacruz.jpg' },
   { id: 51, name: 'Jhun Refugia',          role: 'Master Triskelion',                    photo: 'images/members/jhunrefugia.jpg' },
   { id: 52, name: 'Jomari Livero',         role: 'Brother',                              photo: 'images/members/jomarilivera.jpg' },
+  { id: 53, name: 'Chano Manimtim',        role: 'Brother',                              photo: '' },
+  { id: 54, name: 'Albert Rodriguez',      role: 'Brother',                              photo: '' },
+  { id: 55, name: 'Micheal Salarda',       role: 'Brother',                              photo: '' },
 ];
 
 /* Helper: get initials from full name */

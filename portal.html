@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Dashboard | Tau Gamma Phi - Asia 2 Community Chapter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/portal.css">
+  <link rel="stylesheet" href="css/login.css">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase CDN Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- PORTAL LAYOUT CONTAINER -->
+  <div class="portal-layout" id="portalLayout" style="display:none;">
+    
+    <!-- SIDEBAR PANEL -->
+    <aside class="portal-sidebar" id="portalSidebar">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar" id="sideAvatar">T</div>
+        <div class="sidebar-name" id="sideName">Brother Triskelion</div>
+        <div class="sidebar-role-badge user" id="sideRole">Brother</div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <div class="menu-item active" onclick="switchPortalTab('feed')" id="tabBtn_feed">
+          <span class="menu-item-icon"><i class="fa-solid fa-house"></i></span> Home Feed
+        </div>
+        <div class="menu-item" onclick="switchPortalTab('search')" id="tabBtn_search">
+          <span class="menu-item-icon"><i class="fa-solid fa-magnifying-glass"></i></span> Search Profile
+        </div>
+        <div class="menu-item" onclick="switchPortalTab('profile')" id="tabBtn_profile">
+          <span class="menu-item-icon"><i class="fa-solid fa-user"></i></span> My Profile
+        </div>
+        <div class="menu-item" onclick="switchPortalTab('admin')" id="tabBtn_admin" style="display:none; border-left:3px solid #ff4b4b; color:#ff7e7e;">
+          <span class="menu-item-icon"><i class="fa-solid fa-shield-halved"></i></span> Admin Panel
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer" style="display:flex; flex-direction:column; gap:8px;">
+        <div class="menu-item" onclick="handleLogout()" style="color:var(--text-muted);">
+          <span class="menu-item-icon"><i class="fa-solid fa-right-from-bracket"></i></span> Log Out
+        </div>
+        <div style="font-size: 7.5px; color: var(--gold-light); opacity: 0.5; text-align: center; letter-spacing: 1px; text-transform: uppercase; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); line-height: 1.4;">
+          Designed &amp; Developed<br>by JCMD 2026
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="portal-main">
+      
+      <!-- TOP BAR -->
+      <header class="portal-topbar">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <button class="portal-burger" onclick="toggleSidebar()">☰</button>
+          <h2 class="topbar-title" id="pageTitle">Home Feed</h2>
+        </div>
+        <div class="topbar-greeting">
+          Salute, <strong id="topbarUserGreeting">Brother</strong>!
+        </div>
+      </header>
+
+      <!-- PORTAL PAGE CONTENTS -->
+      <div class="portal-content">
+        
+        <!-- ======================= TAB 1: HOME FEED ======================= -->
+        <div class="portal-tab-content active" id="tab_feed">
+          <!-- KPI Cards -->
+          <div class="dashboard-kpi-grid">
+            <div class="kpi-card fund">
+              <div class="kpi-info-box">
+                <h3>Total Fund</h3>
+                <div class="kpi-number" id="kpiTotalFund">₱0.00</div>
+              </div>
+              <span class="kpi-icon"><i class="fa-solid fa-coins"></i></span>
+            </div>
+            <div class="kpi-card members">
+              <div class="kpi-info-box">
+                <h3>Total Members</h3>
+                <div class="kpi-number" id="kpiTotalMembers">0</div>
+              </div>
+              <span class="kpi-icon"><i class="fa-solid fa-users"></i></span>
+            </div>
+          </div>
+
+          <div class="feed-layout">
+            <!-- Left Side Feed column -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              <!-- Post Box -->
+              <div class="post-status-card">
+                <div class="post-card-header">
+                  <div class="post-card-avatar" id="postBoxAvatar">T</div>
+                  <strong style="font-size:12px; font-family:'Cinzel', serif;">What's on your mind, Bro?</strong>
+                </div>
+                <form id="createPostForm" onsubmit="handleCreatePost(event)">
+                  <textarea class="post-textarea" id="postContent" placeholder="Share updates on chapter projects, contributions, or general fraternity news..." required></textarea>
+                  <div class="post-card-actions">
+                    <label class="post-attach-btn">
+                      <i class="fa-solid fa-image" style="margin-right: 6px;"></i> Attach Image
+                      <input type="file" id="postImageFile" class="post-attach-input" accept="image/*" onchange="handlePostFileSelect(this)">
+                    </label>
+                    <span id="postFileNameIndicator" class="post-file-indicator"></span>
+                    <button type="submit" class="btn-gold" id="postBtn" style="padding: 10px 24px; font-size:11px;">
+                      <span class="btn-text">Post Update →</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Feed list -->
+              <div class="status-feed-container" id="feedListContainer">
+                <!-- Loaded by JS -->
+                <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                  <span class="spinner"></span> Loading Feed Updates...
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side static sidebar -->
+            <div style="background:var(--glass-card); border:1px solid rgba(255,255,255,0.03); padding:24px; border-radius:8px;">
+              <h3 style="font-family:'Cinzel', serif; font-size:13px; color:var(--gold); border-bottom:1px solid rgba(201,168,76,0.15); padding-bottom:8px; margin-bottom:16px;">Fraternity Codes</h3>
+              <ul style="font-size:12px; list-style:none; display:flex; flex-direction:column; gap:12px; color:var(--text-muted); line-height:1.6;">
+                <li><strong style="color:var(--white);">1. TGP Code of Conduct:</strong> Treat every brother with respect, honor, and loyalty.</li>
+                <li><strong style="color:var(--white);">2. Community Service:</strong> Strive constantly for community development and academic excellence.</li>
+                <li><strong style="color:var(--white);">3. Triskelion Oath:</strong> "Once a Triskelion, Always a Triskelion" - preserve the honor of the whip.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================= TAB 2: SEARCH PROFILES ======================= -->
+        <div class="portal-tab-content" id="tab_search">
+          <div class="search-bar-wrap">
+            <input type="text" class="search-input" id="searchBar" placeholder="Search brothers by Name, Nickname/Alias, or Batch Name..." oninput="handleSearchQuery(this.value)">
+          </div>
+          
+          <div class="members-grid" id="searchMembersGrid">
+            <!-- Renders dynamically -->
+          </div>
+        </div>
+
+        <!-- ======================= TAB 3: MY PROFILE ======================= -->
+        <div class="portal-tab-content" id="tab_profile">
+          <div class="profile-grid">
+            <!-- Left Side stats -->
+            <div class="profile-left-column">
+              <!-- Contribution summary -->
+              <div class="contrib-summary-card">
+                <h3>My Contributions</h3>
+                <div class="contrib-total-amount" id="myTotalContributions">₱0.00</div>
+                <div class="contrib-history-list" id="myContributionsList">
+                  <!-- Loaded dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side editable details -->
+            <div class="edit-profile-card">
+              <h3 style="font-family:'Cinzel', serif; font-size:18px; color:var(--white); border-bottom:1px solid rgba(201,168,76,0.15); padding-bottom:12px; margin-bottom:24px;">EDIT PROFILE DETAILS</h3>
+              
+              <form id="editProfileForm" onsubmit="handleEditProfileSubmit(event)">
+                <!-- Avatar Editing -->
+                <div class="avatar-upload-wrap" style="margin-bottom:32px;">
+                  <span class="avatar-label">Change Profile Picture</span>
+                  <div class="avatar-preview-box" onclick="triggerEditAvatarInput()">
+                    <img id="editAvatarPreview" alt="Avatar">
+                  </div>
+                  <input type="file" id="editAvatarFile" class="avatar-file-input" accept="image/*" onchange="handleEditAvatarSelect(this)">
+                </div>
+
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="editName">Full Name</label>
+                    <input type="text" id="editName" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="editTbirth">Triskelion Birth Date</label>
+                    <input type="date" id="editTbirth" required>
+                  </div>
+                </div>
+
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="editAlias">Alias / Nickname</label>
+                    <input type="text" id="editAlias" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="editBatch">Batch Name</label>
+                    <input type="text" id="editBatch" required>
+                  </div>
+                </div>
+
+                <div class="input-row">
+                  <div class="input-group">
+                    <label for="editUsername">Username</label>
+                    <input type="text" id="editUsername" required>
+                  </div>
+                  <div class="input-group">
+                    <label for="editEmail">Email Address</label>
+                    <input type="email" id="editEmail" required>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label for="editPassword">Change Password (leave blank to keep current)</label>
+                  <input type="password" id="editPassword" placeholder="New Password (min 6 characters)">
+                </div>
+
+                <button type="submit" class="btn-gold" id="saveProfileBtn" style="width:100%; margin-top:12px;">
+                  <span class="btn-text">Save Profile Changes →</span>
+                </button>
+              </form>
+
+              <!-- Danger Zone -->
+              <div class="danger-zone-card">
+                <div class="danger-zone-text">
+                  <h4>Delete Portal Account</h4>
+                  <p>Permanently removes your profile data. This action is irreversible.</p>
+                </div>
+                <button class="table-btn danger" onclick="triggerDeleteAccount()" style="padding: 10px 18px; font-weight:bold;">
+                  Delete Account
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================= TAB 4: ADMIN OPERATIONS ======================= -->
+        <div class="portal-tab-content" id="tab_admin">
+          
+          <!-- Subtabs bar -->
+          <div class="admin-tabs-bar">
+            <button class="admin-tab-btn active" id="adminSubtabBtn_approvals" onclick="switchAdminSubtab('approvals')">Approvals</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_users" onclick="switchAdminSubtab('users')">Manage Users</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_contributions" onclick="switchAdminSubtab('contributions')">Manage Contributions</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_posts" onclick="switchAdminSubtab('posts')">Manage Posts</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_logs" onclick="switchAdminSubtab('logs')">System Logs</button>
+            <button class="admin-tab-btn" id="adminSubtabBtn_messages" onclick="switchAdminSubtab('messages')">Contact Messages</button>
+          </div>
+
+          <!-- 4A. SUBTAB: PENDING APPROVALS -->
+          <div class="admin-subpanel active" id="adminSub_approvals">
+            <div class="pending-grid" id="adminApprovalsContainer">
+              <!-- Loaded by JS -->
+            </div>
+          </div>
+
+          <!-- 4B. SUBTAB: USERS CRUD -->
+          <div class="admin-subpanel" id="adminSub_users">
+            <div class="table-responsive">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Avatar</th>
+                    <th>Name</th>
+                    <th>Alias</th>
+                    <th>Batch</th>
+                    <th>Tbirth</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTableBody">
+                  <!-- Loaded by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4C. SUBTAB: CONTRIBUTIONS CRUD -->
+          <div class="admin-subpanel" id="adminSub_contributions">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+              <h4 style="font-family:'Cinzel', serif; font-size:14px; color:var(--white);">Log Contributions</h4>
+              <button class="btn-gold" onclick="openContributionModal('create')" style="padding: 8px 16px; font-size:10px; clip-path:none; border-radius:4px;">
+                + Add New Contribution
+              </button>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Brother</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminContributionsTableBody">
+                  <!-- Loaded by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4D. SUBTAB: POSTS CRUD -->
+          <div class="admin-subpanel" id="adminSub_posts">
+            <div class="table-responsive">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Author</th>
+                    <th>Content</th>
+                    <th>Has Photo</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminPostsTableBody">
+                  <!-- Loaded by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4E. SUBTAB: AUDIT LOGS -->
+          <div class="admin-subpanel" id="adminSub_logs">
+            <div class="table-responsive">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Actor (Email)</th>
+                    <th>Action</th>
+                    <th>Log Details</th>
+                  </tr>
+                </thead>
+                <tbody id="adminLogsTableBody">
+                  <!-- Loaded by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4F. SUBTAB: CONTACT MESSAGES -->
+          <div class="admin-subpanel" id="adminSub_messages">
+            <div class="table-responsive">
+              <table class="portal-table">
+                <thead>
+                  <tr>
+                    <th>Sender Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message Content</th>
+                    <th>Log Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminMessagesTableBody">
+                  <!-- Loaded by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- CONTRIBUTION CRUD MODAL -->
+  <div class="overlay-screen" id="contributionModal">
+    <div class="overlay-card" style="text-align: left; max-width: 460px;">
+      <h3 class="overlay-title" id="contribModalTitle" style="margin-bottom:20px;">ADD CONTRIBUTION</h3>
+      <form id="contributionForm" onsubmit="handleContributionSubmit(event)">
+        <input type="hidden" id="contribEditId">
+        
+        <div class="input-group">
+          <label for="contribUserId">Select Brother</label>
+          <select id="contribUserId" required>
+            <!-- Loaded by JS -->
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label for="contribAmount">Contribution Amount (PHP)</label>
+          <input type="number" id="contribAmount" min="1" step="0.01" placeholder="500.00" required>
+        </div>
+        
+        <div class="input-group">
+          <label for="contribDesc">Contribution Description</label>
+          <input type="text" id="contribDesc" placeholder="e.g. Libreng Almusal Sponsorship" required>
+        </div>
+        
+        <div class="input-group">
+          <label for="contribDate">Log Date</label>
+          <input type="date" id="contribDate" required>
+        </div>
+
+        <button type="submit" class="btn-gold" style="width: 100%; margin-top: 12px;">
+          Confirm Contribution Records →
+        </button>
+        <button type="button" class="btn-outline" onclick="closeOverlayScreen('contributionModal')" style="width: 100%; margin-top: 12px; border-color:transparent; color:var(--text-muted);">
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN USER EDIT MODAL -->
+  <div class="overlay-screen" id="adminUserModal">
+    <div class="overlay-card" style="text-align: left; max-width: 480px;">
+      <h3 class="overlay-title" style="margin-bottom:20px;">EDIT USER (ADMIN MODE)</h3>
+      <form id="adminUserForm" onsubmit="handleAdminUserSubmit(event)">
+        <input type="hidden" id="adminUserEditId">
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label for="adminUserRole">Role</label>
+            <select id="adminUserRole" required>
+              <option value="user">User (Active Brother)</option>
+              <option value="admin">Admin (Chapter Officer)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="adminUserStatus">Status</label>
+            <select id="adminUserStatus" required>
+              <option value="approved">Approved</option>
+              <option value="pending_approval">Pending Approval</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="adminUserName">Full Name</label>
+            <input type="text" id="adminUserName" required>
+          </div>
+          <div class="input-group">
+            <label for="adminUserTbirth">Triskelion Birth</label>
+            <input type="date" id="adminUserTbirth" required>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="adminUserAlias">Alias</label>
+            <input type="text" id="adminUserAlias" required>
+          </div>
+          <div class="input-group">
+            <label for="adminUserBatch">Batch Name</label>
+            <input type="text" id="adminUserBatch" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-gold" style="width: 100%; margin-top: 12px;">
+          Update User Records →
+        </button>
+        <button type="button" class="btn-outline" onclick="closeOverlayScreen('adminUserModal')" style="width: 100%; margin-top: 12px; border-color:transparent; color:var(--text-muted);">
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  
+  <script>
+    let currentSession = null;
+    let currentUserProfile = null;
+
+    // Modal / Overlay Helpers
+    function showOverlayScreen(screenId) {
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function closeOverlayScreen(screenId) {
+      document.getElementById(screenId).classList.remove("active");
+    }
+
+    // Load active session on init
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!isConfigured()) {
+        window.location.href = "login.html";
+        return;
+      }
+      
+      // Get DB Client
+      getDbClient();
+
+      try {
+        const sessionData = await getCurrentUserSession();
+        if (!sessionData) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentSession = sessionData.session;
+        currentUserProfile = sessionData.profile;
+
+        // Verify status is approved
+        if (currentUserProfile.status !== 'approved') {
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Show layout
+        document.getElementById("portalLayout").style.display = "flex";
+
+        // Setup Sidebar info
+        updateSidebarProfileUI();
+
+        // Load first tab content
+        switchPortalTab('feed');
+
+      } catch (e) {
+        console.error("Session load error:", e);
+        window.location.href = "login.html";
+      }
+    });
+
+    function updateSidebarProfileUI() {
+      const sideAvatar = document.getElementById("sideAvatar");
+      const sideName = document.getElementById("sideName");
+      const sideRole = document.getElementById("sideRole");
+      const postBoxAvatar = document.getElementById("postBoxAvatar");
+      const topbarUserGreeting = document.getElementById("topbarUserGreeting");
+
+      // Name & Greeting
+      sideName.textContent = currentUserProfile.name;
+      topbarUserGreeting.textContent = currentUserProfile.alias || currentUserProfile.name.split(' ')[0];
+
+      // Avatar preview
+      const initials = currentUserProfile.name.charAt(0).toUpperCase();
+      if (currentUserProfile.picture_url) {
+        const imgTag = `<img src="${currentUserProfile.picture_url}" alt="${currentUserProfile.name}">`;
+        sideAvatar.innerHTML = imgTag;
+        if (postBoxAvatar) postBoxAvatar.innerHTML = imgTag;
+      } else {
+        sideAvatar.textContent = initials;
+        if (postBoxAvatar) postBoxAvatar.textContent = initials;
+      }
+
+      // Role
+      if (currentUserProfile.role === 'admin') {
+        sideRole.textContent = "Officer / Admin";
+        sideRole.className = "sidebar-role-badge admin";
+        
+        // Show Admin Navigation Button
+        document.getElementById("tabBtn_admin").style.display = "flex";
+      } else {
+        sideRole.textContent = "Brother";
+        sideRole.className = "sidebar-role-badge user";
+        document.getElementById("tabBtn_admin").style.display = "none";
+      }
+    }
+
+    // Burger Sidebar Toggle (Responsive Mobile)
+    function toggleSidebar() {
+      document.getElementById("portalSidebar").classList.toggle("active");
+    }
+
+    // Tab Switching
+    function switchPortalTab(tabName) {
+      // Close mobile sidebar if open
+      document.getElementById("portalSidebar").classList.remove("active");
+
+      // Set Page Title
+      const titleMap = {
+        feed: "Home Feed",
+        search: "Brothers Directory",
+        profile: "My Profile",
+        admin: "Chapter Control Panel"
+      };
+      document.getElementById("pageTitle").textContent = titleMap[tabName] || "Dashboard";
+
+      // Toggle tab buttons
+      const tabBtns = document.querySelectorAll(".sidebar-menu .menu-item");
+      tabBtns.forEach(btn => btn.classList.remove("active"));
+      
+      const targetBtn = document.getElementById("tabBtn_" + tabName);
+      if (targetBtn) targetBtn.classList.add("active");
+
+      // Toggle tab subpanels
+      const panels = document.querySelectorAll(".portal-tab-content");
+      panels.forEach(p => p.classList.remove("active"));
+      
+      const targetPanel = document.getElementById("tab_" + tabName);
+      if (targetPanel) targetPanel.classList.add("active");
+
+      // Trigger tab-specific loaders
+      if (tabName === 'feed') {
+        loadFeedTab();
+      } else if (tabName === 'search') {
+        loadSearchTab();
+      } else if (tabName === 'profile') {
+        loadProfileTab();
+      } else if (tabName === 'admin') {
+        loadAdminTab();
+      }
+    }
+
+    /* ==========================================
+       TAB 1: HOME FEED SYSTEM
+       ========================================== */
+    async function loadFeedTab() {
+      // 1. Fetch aggregate statistics
+      const kpis = await fetchPortalKPIs();
+      
+      const formatCurrency = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
+      document.getElementById("kpiTotalFund").textContent = formatCurrency.format(kpis.totalFund);
+      document.getElementById("kpiTotalMembers").textContent = kpis.totalMembers;
+
+      // 2. Fetch Feed posts
+      await refreshFeedList();
+    }
+
+    function handlePostFileSelect(input) {
+      const file = input.files[0];
+      const indicator = document.getElementById("postFileNameIndicator");
+      if (file) {
+        indicator.textContent = "✓ " + file.name.substring(0, 15) + (file.name.length > 15 ? "..." : "");
+      } else {
+        indicator.textContent = "";
+      }
+    }
+
+    async function handleCreatePost(event) {
+      event.preventDefault();
+      
+      const content = document.getElementById("postContent").value;
+      const file = document.getElementById("postImageFile").files[0];
+      const postBtn = document.getElementById("postBtn");
+
+      if (!content.trim()) return;
+
+      postBtn.disabled = true;
+      postBtn.querySelector(".btn-text").innerHTML = `<span class="spinner"></span>Posting...`;
+
+      try {
+        await createStatusPost(content, file);
+        
+        // Reset form
+        document.getElementById("postContent").value = "";
+        document.getElementById("postImageFile").value = "";
+        document.getElementById("postFileNameIndicator").textContent = "";
+
+        // Reload feed
+        await refreshFeedList();
+      } catch (error) {
+        console.error("Post creation failed:", error);
+        alert("Failed to post status: " + error.message);
+      } finally {
+        postBtn.disabled = false;
+        postBtn.querySelector(".btn-text").textContent = "Post Update →";
+      }
+    }
+
+    async function refreshFeedList() {
+      const feedListContainer = document.getElementById("feedListContainer");
+      
+      try {
+        const posts = await getStatusFeed();
+        
+        if (posts.length === 0) {
+          feedListContainer.innerHTML = `
+            <div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:8px;">
+              <i class="fa-solid fa-feather-pointed" style="color:var(--gold); margin-right:8px;"></i> No status updates posted yet. Be the first to post!
+            </div>
+          `;
+          return;
+        }
+
+        feedListContainer.innerHTML = posts.map(p => {
+          const profile = p.profiles || {};
+          const name = profile.name || "Unknown Brother";
+          const alias = profile.alias ? `Bro. ${profile.alias}` : "Active Brother";
+          const initial = name.charAt(0).toUpperCase();
+          const avatar = profile.picture_url 
+            ? `<img src="${profile.picture_url}" alt="${name}">`
+            : initial;
+
+          const date = new Date(p.created_at).toLocaleString();
+          const imageTag = p.image_url 
+            ? `<img src="${p.image_url}" class="status-attachment-img" alt="Post attachment">`
+            : "";
+
+          return `
+            <div class="status-card">
+              <div class="status-card-top">
+                <div class="status-user-info">
+                  <div class="status-user-avatar">${avatar}</div>
+                  <div>
+                    <div class="status-user-name">${name}</div>
+                    <div class="status-user-alias">${alias}</div>
+                  </div>
+                </div>
+                <div class="status-timestamp">${date}</div>
+              </div>
+              <div class="status-content">
+                ${p.content.replace(/\n/g, '<br>')}
+              </div>
+              ${imageTag}
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Error loading status updates:", error);
+        feedListContainer.innerHTML = `
+          <div style="text-align:center; padding:40px; color:#ff7e7e;">
+            Failed to fetch status updates. Please check connection.
+          </div>
+        `;
+      }
+    }
+
+    /* ==========================================
+       TAB 2: MEMBER SEARCH SYSTEM
+       ========================================== */
+    async function loadSearchTab() {
+      await refreshSearchGrid("");
+    }
+
+    async function handleSearchQuery(query) {
+      await refreshSearchGrid(query.trim());
+    }
+
+    async function refreshSearchGrid(query) {
+      const grid = document.getElementById("searchMembersGrid");
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px;"><span class="spinner"></span> Searching Brothers...</div>`;
+
+      try {
+        const members = await searchActiveProfiles(query);
+        
+        if (members.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted); background:var(--glass-card); border-radius:8px;">
+              No matching brothers found in Asia 2 directory.
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = members.map(m => {
+          const initials = m.name.charAt(0) + (m.name.split(' ').length > 1 ? m.name.split(' ').pop().charAt(0) : "");
+          const avatar = m.picture_url
+            ? `<img src="${m.picture_url}" alt="${m.name}">`
+            : initials.toUpperCase();
+          
+          const tbirthStr = new Date(m.tbirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          const roleBadgeClass = m.role === 'admin' ? 'sidebar-role-badge admin' : 'sidebar-role-badge user';
+          const roleText = m.role === 'admin' ? 'Officer' : 'Brother';
+
+          return `
+            <div class="member-card">
+              <div class="member-avatar">${avatar}</div>
+              <div class="member-name">${m.name}</div>
+              <div class="member-role" style="font-size:9.5px; margin-bottom:8px;">Bro. ${m.alias || "Active"}</div>
+              <div class="sidebar-role-badge ${m.role === 'admin' ? 'admin':'user'}" style="font-size:8px; margin-bottom:12px;">${roleText}</div>
+              <div style="font-size:10px; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.03); padding-top:10px; display:flex; flex-direction:column; gap:4px; text-align:left;">
+                <div><span style="color:var(--gold);">Batch:</span> ${m.batchname}</div>
+                <div><span style="color:var(--gold);">Tbirth:</span> ${tbirthStr}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Search error:", error);
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#ff7e7e;">Error searching active members.</div>`;
+      }
+    }
+
+    /* ==========================================
+       TAB 3: MY PROFILE SYSTEM
+       ========================================== */
+    function triggerEditAvatarInput() {
+      document.getElementById("editAvatarFile").click();
+    }
+
+    function handleEditAvatarSelect(input) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById("editAvatarPreview").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function loadProfileTab() {
+      // 1. Populate editable fields
+      document.getElementById("editName").value = currentUserProfile.name;
+      document.getElementById("editTbirth").value = currentUserProfile.tbirth;
+      document.getElementById("editAlias").value = currentUserProfile.alias || "";
+      document.getElementById("editBatch").value = currentUserProfile.batchname;
+      document.getElementById("editUsername").value = currentUserProfile.username;
+      document.getElementById("editEmail").value = currentUserProfile.email;
+      document.getElementById("editPassword").value = "";
+
+      const editPreview = document.getElementById("editAvatarPreview");
+      if (currentUserProfile.picture_url) {
+        editPreview.src = currentUserProfile.picture_url;
+      } else {
+        editPreview.src = "images/asia2logo.png"; // Fallback preview
+      }
+
+      // 2. Load Contribution list
+      await refreshProfileContributions();
+    }
+
+    async function refreshProfileContributions() {
+      const listEl = document.getElementById("myContributionsList");
+      listEl.innerHTML = `<span class="spinner"></span> Loading contributions...`;
+
+      try {
+        const { total, list } = await getUserContributionDetails(currentUserProfile.id);
+        
+        const formatCurrency = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
+        document.getElementById("myTotalContributions").textContent = formatCurrency.format(total);
+
+        if (list.length === 0) {
+          listEl.innerHTML = `<div style="font-size:11px; text-align:center; color:var(--text-muted); padding:16px 0;">No contributions recorded yet.</div>`;
+          return;
+        }
+
+        listEl.innerHTML = list.map(item => {
+          const dateStr = new Date(item.date).toLocaleDateString();
+          return `
+            <div class="contrib-history-item">
+              <div>
+                <strong style="color:var(--white);">${item.description}</strong>
+                <div style="font-size:8.5px; color:var(--text-muted); margin-top:2px;">${dateStr}</div>
+              </div>
+              <div class="contrib-hist-amount">${formatCurrency.format(item.amount)}</div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Contributions error:", error);
+        listEl.innerHTML = `<div style="color:#ff7e7e; font-size:11px;">Failed to load contribution logs.</div>`;
+      }
+    }
+
+    async function handleEditProfileSubmit(event) {
+      event.preventDefault();
+      
+      const saveBtn = document.getElementById("saveProfileBtn");
+      saveBtn.disabled = true;
+      saveBtn.querySelector(".btn-text").innerHTML = `<span class="spinner"></span>Saving Updates...`;
+
+      const name = document.getElementById("editName").value;
+      const tbirth = document.getElementById("editTbirth").value;
+      const alias = document.getElementById("editAlias").value;
+      const batchname = document.getElementById("editBatch").value;
+      const username = document.getElementById("editUsername").value;
+      const email = document.getElementById("editEmail").value;
+      const password = document.getElementById("editPassword").value;
+      const pictureFile = document.getElementById("editAvatarFile").files[0];
+
+      try {
+        await updateUserProfile(currentUserProfile.id, {
+          name, tbirth, alias, batchname, email, username, password, pictureFile
+        });
+
+        alert("Profile updated successfully!");
+        
+        // Re-load session
+        const sessionData = await getCurrentUserSession();
+        currentUserProfile = sessionData.profile;
+        
+        // Update Sidebar UI and profile fields
+        updateSidebarProfileUI();
+        await loadProfileTab();
+        
+      } catch (error) {
+        console.error("Update fail:", error);
+        alert("Failed to update profile: " + error.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.querySelector(".btn-text").textContent = "Save Profile Changes →";
+      }
+    }
+
+    async function triggerDeleteAccount() {
+      const prompt1 = confirm("⚠ WARNING: Are you absolutely sure you want to delete your portal account? This will permanently remove your profile data.");
+      if (prompt1) {
+        const prompt2 = confirm("⚠ SECURE VERIFICATION: This action is irreversible. All your posts and profile data will be permanently wiped. Confirm deletion?");
+        if (prompt2) {
+          try {
+            await deleteUserAccount(currentUserProfile.id, currentUserProfile.email);
+            alert("Account permanently deleted. Salute, Brother.");
+            window.location.href = "login.html";
+          } catch (e) {
+            console.error("Deletion error:", e);
+            alert("Deletion Failed: " + e.message);
+          }
+        }
+      }
+    }
+
+    /* ==========================================
+       TAB 4: ADMIN SYSTEMS & CRUD
+       ========================================== */
+    let adminActiveSubtab = 'approvals';
+
+    function switchAdminSubtab(subtabId) {
+      adminActiveSubtab = subtabId;
+      
+      const btns = document.querySelectorAll(".admin-tab-btn");
+      btns.forEach(b => b.classList.remove("active"));
+      document.getElementById("adminSubtabBtn_" + subtabId).classList.add("active");
+
+      const panels = document.querySelectorAll(".admin-subpanel");
+      panels.forEach(p => p.classList.remove("active"));
+      document.getElementById("adminSub_" + subtabId).classList.add("active");
+
+      refreshAdminSubtabData();
+    }
+
+    async function loadAdminTab() {
+      switchAdminSubtab('approvals');
+    }
+
+    async function refreshAdminSubtabData() {
+      if (adminActiveSubtab === 'approvals') {
+        await loadAdminApprovals();
+      } else if (adminActiveSubtab === 'users') {
+        await loadAdminUsersList();
+      } else if (adminActiveSubtab === 'contributions') {
+        await loadAdminContributionsList();
+      } else if (adminActiveSubtab === 'posts') {
+        await loadAdminPostsList();
+      } else if (adminActiveSubtab === 'logs') {
+        await loadAdminLogsList();
+      } else if (adminActiveSubtab === 'messages') {
+        await loadAdminMessagesList();
+      }
+    }
+
+    /* 4A. SUBTAB: PENDING APPROVALS QUEUE */
+    async function loadAdminApprovals() {
+      const container = document.getElementById("adminApprovalsContainer");
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px;"><span class="spinner"></span> Loading pending registrations...</div>`;
+
+      try {
+        const pending = await adminGetPendingRegistrations();
+        
+        if (pending.length === 0) {
+          container.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted); background:rgba(255,255,255,0.01); border-radius:8px; border:1px dashed rgba(201,168,76,0.1);">
+              <i class="fa-solid fa-user-clock" style="color:var(--gold); margin-right:8px;"></i> No pending registration requests at this time.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = pending.map(u => {
+          const initials = u.name.charAt(0) + (u.name.split(' ').length > 1 ? u.name.split(' ').pop().charAt(0) : "");
+          const avatar = u.picture_url
+            ? `<img src="${u.picture_url}" alt="${u.name}">`
+            : initials.toUpperCase();
+          const tbirthStr = new Date(u.tbirth).toLocaleDateString();
+
+          return `
+            <div class="pending-card">
+              <div class="pending-card-top">
+                <div class="pending-avatar">${avatar}</div>
+                <div class="pending-meta">
+                  <h4>${u.name}</h4>
+                  <p>Request: ${u.role}</p>
+                </div>
+              </div>
+              <div class="pending-details">
+                <div class="pending-detail-row">
+                  <span class="pending-detail-label">Username:</span>
+                  <span class="pending-detail-value">${u.username}</span>
+                </div>
+                <div class="pending-detail-row">
+                  <span class="pending-detail-label">Email:</span>
+                  <span class="pending-detail-value">${u.email}</span>
+                </div>
+                <div class="pending-detail-row">
+                  <span class="pending-detail-label">Alias:</span>
+                  <span class="pending-detail-value">Bro. ${u.alias || "Active"}</span>
+                </div>
+                <div class="pending-detail-row">
+                  <span class="pending-detail-label">Batch:</span>
+                  <span class="pending-detail-value">${u.batchname}</span>
+                </div>
+                <div class="pending-detail-row">
+                  <span class="pending-detail-label">Tbirth:</span>
+                  <span class="pending-detail-value">${tbirthStr}</span>
+                </div>
+              </div>
+              <div class="pending-actions">
+                <button class="pending-btn approve" onclick="handleAdminDecision('${u.id}', 'approve')">Approve ✓</button>
+                <button class="pending-btn reject" onclick="handleAdminDecision('${u.id}', 'reject')">Reject ✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Error approvals:", error);
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#ff7e7e;">Failed to load approvals queue.</div>`;
+      }
+    }
+
+    async function handleAdminDecision(userId, decision) {
+      const confirmMsg = decision === 'approve' 
+        ? "Approve this user for portal access?" 
+        : "REJECT and deny access to this registration?";
+      
+      if (confirm(confirmMsg)) {
+        try {
+          if (decision === 'approve') {
+            await adminApproveUser(userId, currentUserProfile.id, currentUserProfile.email);
+            alert("Registration Approved Successfully!");
+          } else {
+            await adminRejectUser(userId, currentUserProfile.id, currentUserProfile.email);
+            alert("Registration Rejected & Denied Access.");
+          }
+          await refreshAdminSubtabData();
+        } catch (error) {
+          console.error("Decision fail:", error);
+          alert("Action failed: " + error.message);
+        }
+      }
+    }
+
+    /* 4B. SUBTAB: USERS CRUD */
+    async function loadAdminUsersList() {
+      const tbody = document.getElementById("adminUsersTableBody");
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px;"><span class="spinner"></span> Loading users directory...</td></tr>`;
+
+      try {
+        const users = await adminGetAllProfiles();
+        
+        if (users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-muted);">No members recorded in database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const initials = u.name.charAt(0) + (u.name.split(' ').length > 1 ? u.name.split(' ').pop().charAt(0) : "");
+          const avatar = u.picture_url
+            ? `<img src="${u.picture_url}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-dark);" alt="${u.name}">`
+            : `<div class="sidebar-avatar" style="width:32px; height:32px; font-size:13px; margin:0;">${initials.toUpperCase()}</div>`;
+          const tbirthStr = new Date(u.tbirth).toLocaleDateString();
+
+          return `
+            <tr>
+              <td>${avatar}</td>
+              <td style="color:var(--white); font-weight:bold;">${u.name}</td>
+              <td>Bro. ${u.alias || "Active"}</td>
+              <td>${u.batchname}</td>
+              <td>${tbirthStr}</td>
+              <td>${u.email}</td>
+              <td><span class="badge ${u.role === 'admin' ? 'action-danger' : 'action-login'}">${u.role}</span></td>
+              <td><span class="badge ${u.status === 'approved' ? 'action-login' : u.status === 'pending_approval' ? 'action-logout' : 'badge-danger'}">${u.status}</span></td>
+              <td>
+                <div class="table-actions">
+                  <button class="table-btn" onclick="openAdminUserEditModal('${u.id}', '${u.role}', '${u.status}', '${u.name.replace(/'/g, "\\'")}', '${u.tbirth}', '${u.alias.replace(/'/g, "\\'")}', '${u.batchname.replace(/'/g, "\\'")}')">Edit</button>
+                  <button class="table-btn danger" onclick="handleAdminDeleteUser('${u.id}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Users list error:", error);
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:#ff7e7e;">Failed to load users list.</td></tr>`;
+      }
+    }
+
+    function openAdminUserEditModal(id, role, status, name, tbirth, alias, batch) {
+      document.getElementById("adminUserEditId").value = id;
+      document.getElementById("adminUserRole").value = role;
+      document.getElementById("adminUserStatus").value = status;
+      document.getElementById("adminUserName").value = name;
+      document.getElementById("adminUserTbirth").value = tbirth;
+      document.getElementById("adminUserAlias").value = alias;
+      document.getElementById("adminUserBatch").value = batch;
+
+      showOverlayScreen("adminUserModal");
+    }
+
+    async function handleAdminUserSubmit(event) {
+      event.preventDefault();
+      
+      const id = document.getElementById("adminUserEditId").value;
+      const role = document.getElementById("adminUserRole").value;
+      const status = document.getElementById("adminUserStatus").value;
+      const name = document.getElementById("adminUserName").value;
+      const tbirth = document.getElementById("adminUserTbirth").value;
+      const alias = document.getElementById("adminUserAlias").value;
+      const batchname = document.getElementById("adminUserBatch").value;
+
+      try {
+        await adminUpsertProfile({
+          id, role, status, name, tbirth, alias, batchname
+        });
+        
+        closeOverlayScreen("adminUserModal");
+        alert("Member details updated successfully.");
+        await refreshAdminSubtabData();
+
+      } catch (error) {
+        console.error("Admin user update fail:", error);
+        alert("Failed updating member: " + error.message);
+      }
+    }
+
+    async function handleAdminDeleteUser(userId) {
+      if (confirm("🚨 WARNING: Are you sure you want to delete this user profile? This will mark their profile status as 'deleted' and permanently remove their authentication records.")) {
+        try {
+          await adminDeleteProfile(userId, currentUserProfile.id, currentUserProfile.email);
+          alert("Member profile successfully deleted.");
+          await refreshAdminSubtabData();
+        } catch (error) {
+          console.error("Admin delete fail:", error);
+          alert("Deletion failed: " + error.message);
+        }
+      }
+    }
+
+    /* 4C. SUBTAB: CONTRIBUTIONS CRUD */
+    async function loadAdminContributionsList() {
+      const tbody = document.getElementById("adminContributionsTableBody");
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px;"><span class="spinner"></span> Loading contributions logs...</td></tr>`;
+
+      try {
+        const contributions = await adminGetAllContributions();
+        
+        if (contributions.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No financial contributions recorded.</td></tr>`;
+          return;
+        }
+
+        const formatCurrency = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
+
+        tbody.innerHTML = contributions.map(c => {
+          const profile = c.profiles || {};
+          const name = profile.name || "Deleted User";
+          const alias = profile.alias ? `Bro. ${profile.alias}` : "Brother";
+          const dateStr = new Date(c.date).toLocaleDateString();
+
+          return `
+            <tr>
+              <td style="color:var(--white); font-weight:bold;">${name} <span style="font-size:10px; color:var(--gold); font-weight:normal; margin-left:6px;">(${alias})</span></td>
+              <td style="color:var(--gold-light); font-weight:bold;">${formatCurrency.format(c.amount)}</td>
+              <td>${c.description}</td>
+              <td>${dateStr}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="table-btn" onclick="openContributionModal('edit', '${c.id}', '${c.user_id}', '${c.amount}', '${c.description.replace(/'/g, "\\'")}', '${c.date}')">Edit</button>
+                  <button class="table-btn danger" onclick="handleAdminDeleteContribution('${c.id}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Admin contributions error:", error);
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#ff7e7e;">Failed to load financial records.</td></tr>`;
+      }
+    }
+
+    async function openContributionModal(mode, id="", userId="", amount="", desc="", date="") {
+      const title = document.getElementById("contribModalTitle");
+      const userSelect = document.getElementById("contribUserId");
+      
+      // Populate approved users list dropdown
+      userSelect.innerHTML = `<option value="">Loading brothers list...</option>`;
+      
+      try {
+        const users = await adminGetAllProfiles();
+        const approvedOnly = users.filter(u => u.status === 'approved');
+        
+        userSelect.innerHTML = approvedOnly.map(u => `
+          <option value="${u.id}">${u.name} (Bro. ${u.alias || "Active"})</option>
+        `).join('');
+      } catch (e) {
+        console.error("Error population select:", e);
+      }
+
+      if (mode === 'create') {
+        title.textContent = "ADD CONTRIBUTION";
+        document.getElementById("contribEditId").value = "";
+        document.getElementById("contribAmount").value = "";
+        document.getElementById("contribDesc").value = "";
+        document.getElementById("contribDate").value = new Date().toISOString().split('T')[0];
+      } else {
+        title.textContent = "EDIT CONTRIBUTION";
+        document.getElementById("contribEditId").value = id;
+        document.getElementById("contribUserId").value = userId;
+        document.getElementById("contribAmount").value = amount;
+        document.getElementById("contribDesc").value = desc;
+        document.getElementById("contribDate").value = date;
+      }
+
+      showOverlayScreen("contributionModal");
+    }
+
+    async function handleContributionSubmit(event) {
+      event.preventDefault();
+      
+      const id = document.getElementById("contribEditId").value;
+      const user_id = document.getElementById("contribUserId").value;
+      const amount = parseFloat(document.getElementById("contribAmount").value);
+      const description = document.getElementById("contribDesc").value;
+      const date = document.getElementById("contribDate").value;
+
+      if (!user_id || !amount || !description || !date) {
+        alert("Please fill in all contribution details.");
+        return;
+      }
+
+      try {
+        if (!id) {
+          // Create
+          await adminCreateContribution({ user_id, amount, description, date }, currentUserProfile.id, currentUserProfile.email);
+          alert("Contribution logged successfully.");
+        } else {
+          // Update
+          await adminUpdateContribution(id, { user_id, amount, description, date }, currentUserProfile.id, currentUserProfile.email);
+          alert("Contribution record updated successfully.");
+        }
+        
+        closeOverlayScreen("contributionModal");
+        await refreshAdminSubtabData();
+
+      } catch (error) {
+        console.error("Contribution submit error:", error);
+        alert("Failed logging contribution: " + error.message);
+      }
+    }
+
+    async function handleAdminDeleteContribution(id) {
+      if (confirm("Are you sure you want to permanently delete this contribution entry?")) {
+        try {
+          await adminDeleteContribution(id, currentUserProfile.id, currentUserProfile.email);
+          alert("Contribution entry deleted.");
+          await refreshAdminSubtabData();
+        } catch (error) {
+          console.error("Admin delete contribution fail:", error);
+          alert("Delete failed: " + error.message);
+        }
+      }
+    }
+
+    /* 4D. SUBTAB: POSTS CRUD */
+    async function loadAdminPostsList() {
+      const tbody = document.getElementById("adminPostsTableBody");
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px;"><span class="spinner"></span> Moderating feed updates...</td></tr>`;
+
+      try {
+        const posts = await adminGetAllPosts();
+        
+        if (posts.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No posts listed on the portal.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = posts.map(p => {
+          const profile = p.profiles || {};
+          const name = profile.name || "Unknown Author";
+          const dateStr = new Date(p.created_at).toLocaleString();
+
+          return `
+            <tr>
+              <td style="color:var(--white); font-weight:bold;">${name}</td>
+              <td style="max-width:300px; word-break:break-all;">${p.content.substring(0, 100)}${p.content.length > 100 ? "..." : ""}</td>
+              <td>${p.image_url ? '<span style="color:#81c784;">✓ Attached</span>' : '✕ None'}</td>
+              <td>${dateStr}</td>
+              <td>
+                <button class="table-btn danger" onclick="handleAdminDeletePost('${p.id}')">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Admin posts error:", error);
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#ff7e7e;">Failed to load posts feed list.</td></tr>`;
+      }
+    }
+
+    async function handleAdminDeletePost(postId) {
+      if (confirm("Are you sure you want to permanently delete this status update?")) {
+        try {
+          await adminDeletePost(postId, currentUserProfile.id, currentUserProfile.email);
+          alert("Status update post deleted successfully.");
+          await refreshAdminSubtabData();
+        } catch (error) {
+          console.error("Post delete fail:", error);
+          alert("Delete failed: " + error.message);
+        }
+      }
+    }
+
+    /* 4E. SUBTAB: AUDIT LOGS TIMELINE */
+    async function loadAdminLogsList() {
+      const tbody = document.getElementById("adminLogsTableBody");
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;"><span class="spinner"></span> Retrieving audit timelines...</td></tr>`;
+
+      try {
+        const logs = await adminGetAllLogs();
+        
+        if (logs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">System logs are empty.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => {
+          const dateStr = new Date(l.created_at).toLocaleString();
+          let badgeClass = "action-crud";
+          
+          if (l.action.includes("LOGIN")) badgeClass = "action-login";
+          if (l.action.includes("LOGOUT")) badgeClass = "action-logout";
+          if (l.action.includes("POST")) badgeClass = "action-post";
+          if (l.action.includes("DELETE") || l.action.includes("REJECT")) badgeClass = "action-danger";
+
+          return `
+            <tr>
+              <td>${dateStr}</td>
+              <td style="color:var(--white);">${l.user_email || "System / Guest"}</td>
+              <td><span class="badge ${badgeClass}">${l.action}</span></td>
+              <td class="log-row-details">${l.details}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Admin logs error:", error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#ff7e7e;">Failed to load system audit logs.</td></tr>`;
+      }
+    }
+
+    /* 4F. SUBTAB: CONTACT MESSAGES LIST */
+    async function loadAdminMessagesList() {
+      const tbody = document.getElementById("adminMessagesTableBody");
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;"><span class="spinner"></span> Loading contact form messages...</td></tr>`;
+
+      try {
+        const messages = await adminGetAllMessages();
+        
+        if (messages.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No messages logged in database.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = messages.map(m => {
+          const dateStr = new Date(m.created_at).toLocaleString();
+          return `
+            <tr>
+              <td style="color:var(--white); font-weight:bold;">${m.name}</td>
+              <td><a href="mailto:${m.email}" style="color:var(--gold-light); text-decoration:underline;">${m.email}</a></td>
+              <td style="color:var(--gold); font-weight:bold;">${m.subject}</td>
+              <td style="white-space:pre-wrap; max-width: 350px;">${m.message}</td>
+              <td>${dateStr}</td>
+              <td>
+                <div class="table-actions">
+                  <button class="table-btn danger" onclick="handleAdminDeleteMessage('${m.id}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error("Admin messages loading error:", error);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#ff7e7e;">Failed to load messages: ${error.message}</td></tr>`;
+      }
+    }
+
+    async function handleAdminDeleteMessage(messageId) {
+      if (confirm("Are you sure you want to delete this contact message log? This action is permanent.")) {
+        try {
+          await adminDeleteMessage(messageId, currentUserProfile.id, currentUserProfile.email);
+          alert("Contact message successfully deleted.");
+          await refreshAdminSubtabData();
+        } catch (error) {
+          console.error("Message delete fail:", error);
+          alert("Deletion failed: " + error.message);
+        }
+      }
+    }
+
+    /* ==========================================
+       LOGOUT SYSTEM
+       ========================================== */
+    async function handleLogout() {
+      if (confirm("Are you sure you want to log out of the portal?")) {
+        try {
+          await logoutUser();
+          window.location.href = "login.html";
+        } catch (e) {
+          console.error("Logout fail:", e);
+          window.location.href = "login.html";
+        }
+      }
+    }
+  </script>
+</body>
+</html>

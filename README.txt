@@ -70,11 +70,26 @@ Replace the text inside <p>...</p> and <div class="tl-year">...</div>
 with the real dates and stories.
 
 
-HOW TO UPDATE CONTACT EMAIL
-----------------------------
-Open js/main.js and find:
-  const recipient = 'jemisa@sscrcan.edu.ph';
-Change to any email you prefer.
+SUPABASE DATABASE CONFIGURATION & PRIVACY
+-----------------------------------------
+The member portal features full-stack Supabase integration for real-time registrations, OTP email approvals, contribution tracking, audit logs, and website contact form logging.
+
+To run, go to Supabase Dashboard > SQL Editor > New Query and run:
+
+  -- Create public.messages table
+  CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+  );
+
+  -- Disable RLS on public.messages for anonymous website inserts
+  ALTER TABLE public.messages DISABLE ROW LEVEL SECURITY;
+
+Data Privacy Notice: Forms comply with the Data Privacy Act of 2012 (RA 10173). Consent warnings are integrated on registration and contact forms.
 
 
 NEED MORE CHANGES?

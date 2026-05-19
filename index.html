@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/chatbot.css">
+  
+  <!-- Supabase CDN Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -30,6 +33,7 @@
     <li><a href="#orgchart">Leadership</a></li>
     <li><a href="#members">Members</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="login.html" class="portal-nav-btn" style="color: var(--gold); border: 1px solid var(--gold); padding: 6px 14px; border-radius: 4px; font-weight: bold; margin-left: 10px; transition: all 0.3s; background: rgba(201,168,76,0.05);">Portal</a></li>
   </ul>
   <div class="nav-toggle" id="navToggle" aria-label="Toggle menu">
     <span></span><span></span><span></span>
@@ -45,6 +49,7 @@
   <a href="#orgchart">Leadership</a>
   <a href="#members">Members</a>
   <a href="#contact">Contact</a>
+  <a href="login.html" style="color: var(--gold); border: 1px solid var(--gold); padding: 10px 24px; border-radius: 4px; font-weight: bold; width: 80%; text-align: center; background: rgba(201,168,76,0.05);">Member Portal</a>
 </div>
 
 <!-- ===================== HERO ===================== -->
@@ -506,7 +511,10 @@
             <textarea id="msgBody" placeholder="Write your message here..." required></textarea>
           </div>
           <button type="submit" class="form-submit">Send Message →</button>
-          <p class="form-note">Message will open Gmail compose and send to our Grand Triskelion.</p>
+          <p class="form-note">Message will be logged directly in the Chapter Officer Dashboard.</p>
+          <p class="form-note" style="margin-top: 10px; font-size: 10px; color: var(--text-muted); opacity: 0.8; line-height: 1.4;">
+            🛡️ <strong>Data Privacy Notice:</strong> By sending, you agree to let Asia 2 Community Chapter securely log your contact details for official response and inquiry processing under the Data Privacy Act of 2012.
+          </p>
           <div class="form-success" id="formSuccess">
             ✦ &nbsp; Gmail compose opened. Thank you, Brother! &nbsp; ✦
           </div>
@@ -533,12 +541,54 @@
     <a href="#orgchart">Leadership</a>
     <a href="#members">Members</a>
     <a href="#contact">Contact</a>
+    <a href="login.html" style="color: var(--gold); font-weight: bold;">Portal</a>
+    <a href="javascript:void(0)" onclick="showOverlayScreen('privacyModal')" style="opacity: 0.6; font-size: 11px;">Privacy Policy</a>
   </nav>
   <p class="footer-motto">"Fortis Voluntas Fraternitas" · "Once a Triskelion, Always a Triskelion"</p>
-  <p class="footer-copy">© 2025 Tau Gamma Phi – Triskelion Grand Fraternity, Asia 2 Community Chapter. All rights reserved.</p>
+  <p class="footer-copy">© 2026 Tau Gamma Phi – Triskelion Grand Fraternity, Asia 2 Community Chapter. All rights reserved.</p>
+  <p class="footer-credit" style="font-size: 10px; color: var(--gold-light); margin-top: 8px; letter-spacing: 1px; text-transform: uppercase;">Designed & Developed by JCMD 2026</p>
 </footer>
 
+<!-- DATA PRIVACY POLICY MODAL -->
+<div class="overlay-screen" id="privacyModal">
+  <div class="overlay-card" style="text-align: left; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+    <h3 class="overlay-title" style="margin-bottom: 20px; font-family: 'Cinzel', serif; color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 10px;">
+      🛡️ DATA PRIVACY POLICY
+    </h3>
+    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6; display: flex; flex-direction: column; gap: 14px;">
+      <p><strong>Tau Gamma Phi - Asia 2 Community Chapter</strong> ("we", "our") is committed to protecting your personal data in compliance with the <strong>Philippine Data Privacy Act of 2012 (RA 10173)</strong>.</p>
+      
+      <div>
+        <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">1. Information We Collect</h4>
+        <p>When you register on the portal or submit our contact form, we securely collect: Full Name, Email, Triskelion Birthdate (membership date), Batch Name, Alias, and Profile Credentials.</p>
+      </div>
+
+      <div>
+        <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">2. Purpose of Collection</h4>
+        <p>Your details are processed exclusively for: official chapter record-keeping, verification of membership, fraternity feed updates, contribution logging, and responding to website inquiries.</p>
+      </div>
+
+      <div>
+        <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">3. Data Security & Storage</h4>
+        <p>All data is hosted securely using enterprise-grade Supabase servers with Row-Level Security (RLS) policies. Only authorized chapter officers can access or manage dashboard logs.</p>
+      </div>
+
+      <div>
+        <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">4. Your Privacy Rights</h4>
+        <p>Under the Data Privacy Act, you have the right to request access to your data, request correction of erroneous profiles, or demand permanent erasure of your portal data at any time.</p>
+      </div>
+
+      <p style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; font-size: 11px;">For any data protection inquiries, contact the chapter administrator at <strong>jemisa@sscrcan.edu.ph</strong>.</p>
+    </div>
+    <button class="btn-gold" onclick="closeOverlayScreen('privacyModal')" style="width: 100%; margin-top: 20px; font-family:'Cinzel', serif; font-size:11px; padding:12px; cursor:pointer;">
+      I Accept & Close
+    </button>
+  </div>
+</div>
+
 <!-- Scripts -->
+<script src="js/config.js"></script>
+<script src="js/supabase-client.js"></script>
 <script src="js/members.js"></script>
 <script src="js/main.js"></script>
 <script src="js/chatbot.js"></script>

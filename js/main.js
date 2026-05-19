@@ -196,12 +196,13 @@ function initContactForm() {
   });
 }
 
-function sendMessage() {
+async function sendMessage() {
   const name    = document.getElementById('senderName').value.trim();
   const email   = document.getElementById('senderEmail').value.trim();
   const subject = document.getElementById('msgSubject').value;
   const body    = document.getElementById('msgBody').value.trim();
   const success = document.getElementById('formSuccess');
+  const submitBtn = document.querySelector('#contactForm .form-submit');
 
   if (!name || !email || !subject || !body) {
     alert('Please fill in all fields before sending.');
@@ -212,20 +213,53 @@ function sendMessage() {
     return;
   }
 
-  const recipient  = 'jemisa@sscrcan.edu.ph';
-  const mailSub    = encodeURIComponent('[TGP Asia 2] ' + subject + ' — from ' + name);
-  const mailBody   = encodeURIComponent(
-    'Name: ' + name + '\n' +
-    'Email: ' + email + '\n' +
-    'Subject: ' + subject + '\n\n' +
-    'Message:\n' + body + '\n\n---\nSent via TGP Asia 2 Chapter Website'
-  );
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${mailSub}&body=${mailBody}`;
-  window.open(gmailUrl, '_blank');
+  // Update button state to sending
+  const originalBtnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<span class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid var(--dark); border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; margin-right:8px; vertical-align:middle;"></span>Sending Message...`;
 
-  if (success) success.style.display = 'block';
-  document.getElementById('senderName').value  = '';
-  document.getElementById('senderEmail').value = '';
-  document.getElementById('msgSubject').value  = '';
-  document.getElementById('msgBody').value     = '';
+  try {
+    // Write to Supabase if configured
+    if (typeof isConfigured === 'function' && isConfigured()) {
+      await submitContactMessage({
+        name,
+        email,
+        subject,
+        message: body
+      });
+    } else {
+      throw new Error("Supabase is not configured yet. Please complete the Portal Setup Wizard.");
+    }
+
+    if (success) {
+      success.textContent = "✦ Salute! Your message has been logged directly inside the Chapter Portal. ✦";
+      success.style.display = 'block';
+    }
+
+    // Reset fields
+    document.getElementById('senderName').value  = '';
+    document.getElementById('senderEmail').value = '';
+    document.getElementById('msgSubject').value  = '';
+    document.getElementById('msgBody').value     = '';
+
+  } catch (error) {
+    console.error("Failed to submit message to database:", error);
+    alert("Inquiry Failed: " + error.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalBtnText;
+  }
+}
+
+/* ============================================================
+   OVERLAY MODAL HELPER FUNCTIONS
+   ============================================================ */
+function showOverlayScreen(screenId) {
+  const modal = document.getElementById(screenId);
+  if (modal) modal.classList.add("active");
+}
+
+function closeOverlayScreen(screenId) {
+  const modal = document.getElementById(screenId);
+  if (modal) modal.classList.remove("active");
 }

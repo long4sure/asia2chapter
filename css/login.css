@@ -1,0 +1,224 @@
+/* ============================================================
+   login.css — Portal Login & Register Styling
+   ============================================================ */
+
+:root {
+  --glass-bg: rgba(26, 26, 26, 0.65);
+  --glass-border: rgba(201, 168, 76, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --glow-gold: 0 0 15px rgba(201, 168, 76, 0.3);
+}
+
+/* Background animated blobs */
+.login-bg-glow {
+  position: fixed; inset: 0; z-index: -1;
+  background: var(--dark);
+  overflow: hidden;
+}
+.glow-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); opacity: 0.15;
+  mix-blend-mode: screen;
+  animation: float 25s ease-in-out infinite alternate;
+}
+.blob1 { width: 45vw; height: 45vw; background: var(--gold-dark); top: -10%; left: -10%; }
+.blob2 { width: 35vw; height: 35vw; background: var(--gold); bottom: -10%; right: -10%; animation-delay: -5s; }
+
+@keyframes float {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(80px, 50px) scale(1.1); }
+}
+
+/* Container */
+.login-container {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 24px;
+  position: relative;
+}
+
+.login-card {
+  width: 100%; max-width: 580px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 48px; border-radius: 12px;
+  position: relative; overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.login-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+}
+
+.login-header { text-align: center; margin-bottom: 32px; }
+.login-logo { width: 72px; height: auto; margin: 0 auto 16px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+.login-title { font-size: 24px; font-weight: 700; color: var(--white); letter-spacing: 2px; }
+.login-subtitle { font-size: 11px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-top: 6px; }
+
+/* Toggles */
+.form-toggle-bar {
+  display: flex; gap: 4px; background: rgba(0,0,0,0.25);
+  padding: 4px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);
+  margin-bottom: 32px;
+}
+.toggle-btn {
+  flex: 1; text-align: center; background: transparent; border: none;
+  color: var(--text-muted); padding: 10px; font-family: 'Cinzel', serif;
+  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+  cursor: pointer; border-radius: 4px; transition: all 0.3s;
+}
+.toggle-btn.active {
+  background: var(--gold); color: var(--dark); font-weight: bold;
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
+}
+
+/* Panel visibility */
+.form-panel { display: none; }
+.form-panel.active { display: block; animation: fadeIn 0.4s ease-out; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Inputs & Form Groups */
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.input-group { margin-bottom: 20px; position: relative; }
+.input-group label {
+  display: block; font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+}
+.input-group input, 
+.input-group select {
+  width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text); padding: 12px 16px; border-radius: 4px;
+  font-family: 'Lato', sans-serif; font-size: 14px; outline: none;
+  transition: all 0.3s;
+}
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--gold);
+  box-shadow: var(--glow-gold);
+  background: rgba(0,0,0,0.45);
+}
+.input-info-tag {
+  font-size: 9px; color: var(--gold); letter-spacing: 0.5px;
+  display: block; margin-top: 4px; opacity: 0.8;
+}
+
+/* Custom Dropzone / Avatar Upload */
+.avatar-upload-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; margin-bottom: 24px; text-align: center;
+}
+.avatar-preview-box {
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 2px dashed var(--gold-dark); background: rgba(0,0,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; cursor: pointer; transition: all 0.3s;
+  position: relative;
+}
+.avatar-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-preview-box:hover { border-color: var(--gold); box-shadow: var(--glow-gold); }
+.avatar-placeholder { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gold-dark); }
+.avatar-placeholder span { font-size: 28px; }
+.avatar-placeholder p { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.avatar-file-input { display: none; }
+.avatar-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* Overlays / Modals */
+.overlay-screen {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(13,13,13,0.92);
+  backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.overlay-screen.active { opacity: 1; pointer-events: auto; }
+
+.overlay-card {
+  width: 100%; max-width: 480px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px; padding: 40px; text-align: center;
+  box-shadow: var(--glass-shadow);
+  transform: translateY(20px); transition: transform 0.4s ease;
+}
+.overlay-screen.active .overlay-card { transform: translateY(0); }
+
+.overlay-icon { font-size: 52px; color: var(--gold); margin-bottom: 20px; }
+.overlay-title { font-family: 'Cinzel', serif; font-size: 22px; color: var(--white); margin-bottom: 12px; letter-spacing: 1.5px; }
+.overlay-desc { color: var(--text-muted); font-size: 14px; line-height: 1.8; margin-bottom: 28px; }
+
+/* OTP Inputs */
+.otp-input-container {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 24px;
+}
+.otp-digit {
+  width: 48px; height: 56px; background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.08); text-align: center;
+  font-size: 24px; font-weight: bold; color: var(--gold);
+  border-radius: 6px; outline: none; transition: all 0.3s;
+}
+.otp-digit:focus {
+  border-color: var(--gold); box-shadow: var(--glow-gold);
+  background: rgba(0,0,0,0.6);
+}
+
+.otp-single-input {
+  width: 85%; max-width: 320px; background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.08); text-align: center;
+  font-size: 20px; font-weight: bold; color: var(--gold);
+  border-radius: 6px; padding: 14px 20px; letter-spacing: 4px;
+  outline: none; transition: all 0.3s; text-transform: uppercase;
+  display: block; margin: 0 auto 24px;
+}
+.otp-single-input:focus {
+  border-color: var(--gold); box-shadow: var(--glow-gold);
+  background: rgba(0,0,0,0.6);
+}
+
+.otp-timer { font-size: 12px; color: var(--text-muted); margin-bottom: 24px; }
+.otp-timer span { color: var(--gold); font-weight: bold; }
+
+/* Wizard Styles */
+.wizard-card {
+  max-width: 650px; text-align: left;
+}
+.wizard-steps-indicator {
+  display: flex; gap: 8px; margin-bottom: 24px;
+}
+.wizard-step-dot {
+  flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px;
+}
+.wizard-step-dot.active { background: var(--gold); }
+
+.sql-copy-box {
+  background: rgba(0,0,0,0.4); border: var(--border);
+  padding: 16px; border-radius: 6px; overflow-x: auto;
+  font-family: monospace; font-size: 11px; max-height: 200px;
+  margin-bottom: 20px; color: #a8ffb2; text-align: left;
+}
+
+/* Loading animation spinner */
+.spinner {
+  width: 24px; height: 24px; border: 2.5px solid rgba(201,168,76,0.25);
+  border-top-color: var(--gold); border-radius: 50%;
+  animation: spin 1s linear infinite; display: inline-block;
+  vertical-align: middle; margin-right: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Button animations */
+.btn-gold:disabled {
+  background: var(--dark3); color: var(--text-muted); cursor: not-allowed;
+  transform: none !important; box-shadow: none !important;
+}
+
+@media (max-width: 600px) {
+  .login-card { padding: 32px 20px; }
+  .input-row { grid-template-columns: 1fr; gap: 0; }
+  .overlay-card { padding: 32px 20px; }
+  .otp-digit { width: 38px; height: 46px; font-size: 18px; }
+}

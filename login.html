@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Portal | Tau Gamma Phi - Asia 2 Community Chapter</title>
+  <meta name="description" content="Tau Gamma Phi - Asia 2 Community Chapter Member Portal. Access dashboard, post status, and track contributions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase CDN Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Background Ambient Lights -->
+  <div class="login-bg-glow">
+    <div class="glow-blob blob1"></div>
+    <div class="glow-blob blob2"></div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <nav id="navbar" style="position: absolute;">
+    <div class="nav-brand">
+      <img src="images/asia2logo.png" class="nav-logo" alt="TGP Asia 2 Logo">
+      <div>
+        <span class="nav-brand-text">TAU GAMMA PHI</span>
+        <span class="nav-brand-sub">Asia 2 Community Chapter</span>
+      </div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Back to Home</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <div class="login-container">
+    <div class="login-card" id="loginCard">
+      <div class="login-header">
+        <img src="images/asia2logo.png" class="login-logo" alt="TGP Asia 2 Logo">
+        <h1 class="login-title">TRISKELION PORTAL</h1>
+        <p class="login-subtitle">Asia 2 Community Chapter</p>
+      </div>
+
+      <!-- Toggles -->
+      <div class="form-toggle-bar">
+        <button class="toggle-btn active" id="toggleLogin" onclick="switchForm('login')">Log In</button>
+        <button class="toggle-btn" id="toggleRegister" onclick="switchForm('register')">Register</button>
+      </div>
+
+      <!-- ERROR ALERTS BOX -->
+      <div id="formErrorAlert" style="display:none; background:rgba(255, 75, 75, 0.1); border:1px solid #ff4b4b; padding:12px 16px; border-radius:4px; color:#ff7e7e; font-size:13px; margin-bottom:24px; line-height:1.5;"></div>
+
+      <!-- LOGIN FORM PANEL -->
+      <div class="form-panel active" id="loginPanel">
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+          <div class="input-group">
+            <label for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" placeholder="bro@tgpasia2.com" required>
+          </div>
+          <div class="input-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-gold" id="loginBtn" style="width: 100%; margin-top: 12px;">
+            <span class="btn-text">Authenticate Portal →</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- REGISTER FORM PANEL -->
+      <div class="form-panel" id="registerPanel">
+        <form id="registerForm" onsubmit="handleRegisterSubmit(event)">
+          
+          <!-- Role selector -->
+          <div class="input-group">
+            <label for="registerRole">Register As</label>
+            <select id="registerRole" onchange="adjustRoleFields(this.value)" required>
+              <option value="user">User (Active Brother)</option>
+              <option value="admin">Admin (Chapter Officer)</option>
+            </select>
+          </div>
+
+          <!-- Avatar Picture -->
+          <div class="avatar-upload-wrap">
+            <span class="avatar-label">Profile Photo</span>
+            <div class="avatar-preview-box" onclick="triggerFileInput()">
+              <div class="avatar-placeholder" id="avatarPlaceholder">
+                <i class="fa-solid fa-camera" style="font-size: 24px; color: var(--gold-dark); margin-bottom: 8px; display: block;"></i>
+                <p>Upload Photo</p>
+              </div>
+              <img id="avatarPreview" style="display:none;" alt="Avatar Preview">
+            </div>
+            <input type="file" id="registerPicture" class="avatar-file-input" accept="image/*" onchange="handleAvatarFileSelect(this)">
+            <p class="avatar-label" style="font-size:9px; color:var(--text-muted);">Recommended square size. Direct Cloudinary Upload.</p>
+          </div>
+
+          <!-- Profile Fields Grid -->
+          <div class="input-row">
+            <div class="input-group">
+              <label for="registerName">Full Name</label>
+              <input type="text" id="registerName" placeholder="Bro. Juan Dela Cruz" required>
+            </div>
+            <div class="input-group">
+              <label for="registerTbirth">Triskelion Birth Date</label>
+              <input type="date" id="registerTbirth" required>
+              <span class="input-info-tag">*Day of Initiation into Brotherhood</span>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="registerAlias">Alias / Nickname</label>
+              <input type="text" id="registerAlias" placeholder="Alias (e.g. Kalbo)" required>
+            </div>
+            <div class="input-group">
+              <label for="registerBatch">Batch Name</label>
+              <input type="text" id="registerBatch" placeholder="e.g. Sinag Lahi" required>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="registerUsername">Username</label>
+              <input type="text" id="registerUsername" placeholder="username" required>
+            </div>
+            <div class="input-group">
+              <label for="registerEmail">Email Address</label>
+              <input type="email" id="registerEmail" placeholder="juan@gmail.com" required>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" placeholder="Minimum 6 characters" minlength="6" required>
+          </div>
+
+          <div style="margin-top: 14px; font-size: 10px; color: var(--text-muted); opacity: 0.85; line-height: 1.4; background: rgba(255,255,255,0.01); padding: 10px; border-radius: 4px; border: 1px solid rgba(201,168,76,0.15); text-align: left;">
+            🛡️ <strong>Privacy Consent Notice:</strong> By registering, you consent to the secure collection, processing, and storage of your personal profile data (including name, Triskelion birthdate, and contact details) exclusively for official chapter records under the Data Privacy Act of 2012.
+          </div>
+
+          <button type="submit" class="btn-gold" id="registerBtn" style="width: 100%; margin-top: 12px;">
+            <span class="btn-text">Register &amp; Request OTP →</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Developer Credit & Privacy -->
+      <div style="text-align: center; margin-top: 24px; font-size: 9px; color: var(--gold-light); opacity: 0.7; letter-spacing: 1.5px; text-transform: uppercase; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <span>Designed & Developed by JCMD 2026</span>
+        <a href="javascript:void(0)" onclick="showOverlayScreen('privacyModal')" style="text-decoration: underline; opacity: 0.8; font-size: 8px; cursor: pointer; letter-spacing: 1px; color: var(--gold); text-transform: uppercase;">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP VERIFICATION SCREEN -->
+  <div class="overlay-screen" id="otpScreen">
+    <div class="overlay-card">
+      <div class="overlay-icon"><i class="fa-solid fa-envelope"></i></div>
+      <h2 class="overlay-title">VERIFY EMAIL</h2>
+      <p class="overlay-desc">
+        A verification code has been dispatched to <strong id="otpEmailSpan" style="color:var(--gold);">email@gmail.com</strong>.<br>
+        Kindly enter the OTP code below to verify your email.
+      </p>
+
+      <div style="margin-bottom: 24px;">
+        <input type="text" class="otp-single-input" id="otpCodeInput" placeholder="ENTER OTP CODE" maxlength="8" required>
+      </div>
+
+      <div class="otp-timer">
+        Code expires shortly. Entering incorrect code will fail verification.
+        <br><br>
+        Didn't receive the email? 
+        <a href="javascript:void(0)" onclick="handleResendOtp()" id="resendOtpLink" style="color: var(--gold); text-decoration: underline; font-weight: bold; cursor: pointer; transition: all 0.3s;">Resend OTP Code</a>
+      </div>
+
+      <button type="button" class="btn-gold" id="verifyOtpBtn" onclick="submitOtpVerification()" style="width: 100%;">
+        <span class="btn-text">Confirm Verification Code →</span>
+      </button>
+
+      <button type="button" class="btn-outline" onclick="closeOtpScreen()" style="width:100%; margin-top:12px; border-color:transparent; color:var(--text-muted);">
+        Cancel &amp; Go Back
+      </button>
+    </div>
+  </div>
+
+  <!-- PENDING APPROVAL SCREEN -->
+  <div class="overlay-screen" id="pendingScreen">
+    <div class="overlay-card" style="max-width:520px;">
+      <div class="overlay-icon" style="color:#C9A84C; animation: pulse 2s infinite;"><i class="fa-solid fa-hourglass-half"></i></div>
+      <h2 class="overlay-title">PENDING APPROVAL</h2>
+      <p class="overlay-desc" style="text-align: left; font-size:13.5px; line-height:1.7;">
+        Salute, Brother! Your email verification is successful.<br><br>
+        Your registration details have been securely logged. For security and to preserve the integrity of the chapter, your account must be reviewed and <strong>approved</strong> by the Grand Triskelion or Master Officers before portal access is authorized.
+        <br><br>
+        <span style="color:var(--gold);">Please notify your Chapter officers to approve your account.</span>
+      </p>
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('pendingScreen')" style="width: 100%;">
+        Back to Login Screen
+      </button>
+    </div>
+  </div>
+
+  <!-- REJECTED SCREEN -->
+  <div class="overlay-screen" id="rejectedScreen">
+    <div class="overlay-card">
+      <div class="overlay-icon" style="color:#ff4b4b;"><i class="fa-solid fa-circle-exclamation"></i></div>
+      <h2 class="overlay-title" style="color:#ff7e7e;">ACCESS DENIED</h2>
+      <p class="overlay-desc">
+        Your registration request has been <strong>rejected</strong> by the Chapter Admin.<br>
+        If you believe this was an error, please contact the Grand Triskelion or your Batch Leader directly.
+      </p>
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('rejectedScreen')" style="width: 100%;">
+        Back to Login Screen
+      </button>
+    </div>
+  </div>
+
+  <!-- SETUP WIZARD OVERLAY -->
+  <div class="overlay-screen" id="wizardScreen">
+    <div class="overlay-card wizard-card">
+      <div class="login-header" style="text-align:left; margin-bottom: 20px;">
+        <img src="images/asia2logo.png" class="login-logo" style="margin: 0 0 16px 0;" alt="TGP Logo">
+        <h2 class="overlay-title" style="font-size:24px;">PORTAL DATABASE CONFIGURATION</h2>
+        <p class="login-subtitle" style="margin-top: 4px;">Supabase &amp; Cloudinary Setup Wizard</p>
+      </div>
+      
+      <p class="overlay-desc" style="text-align:left; font-size: 13px; margin-bottom: 20px;">
+        Welcome to the Tau Gamma Phi Member Portal! Since this site is hosted client-side, you must configure your Supabase database and Cloudinary storage credentials. 
+        These keys will be saved in your browser's local cache. 
+      </p>
+
+      <form id="wizardForm" onsubmit="handleWizardSubmit(event)">
+        <!-- Step 1 fields -->
+        <div class="input-group">
+          <label for="wizSupabaseUrl">Supabase API URL</label>
+          <input type="url" id="wizSupabaseUrl" placeholder="https://xxxxxx.supabase.co" required>
+        </div>
+        <div class="input-group">
+          <label for="wizSupabaseKey">Supabase Anon Key</label>
+          <input type="text" id="wizSupabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="wizCloudName">Cloudinary Cloud Name (Optional)</label>
+            <input type="text" id="wizCloudName" placeholder="e.g. dxxxxxx">
+            <span class="input-info-tag">*Enables profile &amp; feed uploader</span>
+          </div>
+          <div class="input-group">
+            <label for="wizUploadPreset">Cloudinary Unsigned Preset (Optional)</label>
+            <input type="text" id="wizUploadPreset" placeholder="e.g. tgp_unsigned">
+          </div>
+        </div>
+
+        <div style="background:rgba(201,168,76,0.04); border:1px dashed var(--gold-dark); padding:14px; border-radius:6px; margin-bottom:20px; font-size:12px; line-height:1.6; color:var(--text-muted);">
+          <strong style="color:var(--gold); display:block; margin-bottom:4px;">💡 Quick database instructions:</strong>
+          Copy the custom SQL schema scripts from <a href="file:///c:/Users/Engineering%20OJT/.gemini/antigravity/brain/09f9b104-50fb-4738-b3b1-1a7b9f9fc43f/implementation_plan.md" target="_blank" style="color:var(--gold-light); text-decoration:underline;">implementation_plan.md</a> and execute them inside your **Supabase Dashboard SQL Editor** to create the tables, system log triggers, and Row Level Security rules instantly!
+        </div>
+
+        <button type="submit" class="btn-gold" style="width: 100%;">
+          Save Configurations &amp; Reload Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // Variables to track sign up state
+    let registeredEmail = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if configured. If not, trigger the Setup Wizard
+      if (!isConfigured()) {
+        document.getElementById("wizardScreen").classList.add("active");
+      } else {
+        // Init Supabase Client
+        getDbClient();
+        
+        // Auto-fill active session if exists
+        checkActiveSession();
+      }
+    });
+
+    async function checkActiveSession() {
+      try {
+        const session = await getCurrentUserSession();
+        if (session) {
+          if (session.profile.status === 'approved') {
+            window.location.href = "portal.html";
+          } else if (session.profile.status === 'pending_approval') {
+            showOverlayScreen('pendingScreen');
+          } else if (session.profile.status === 'rejected') {
+            showOverlayScreen('rejectedScreen');
+          }
+        }
+      } catch (e) {
+        console.log("No active approved session:", e);
+      }
+    }
+
+    function switchForm(mode) {
+      document.getElementById("formErrorAlert").style.display = "none";
+      
+      const toggleLogin = document.getElementById("toggleLogin");
+      const toggleRegister = document.getElementById("toggleRegister");
+      const loginPanel = document.getElementById("loginPanel");
+      const registerPanel = document.getElementById("registerPanel");
+
+      if (mode === "login") {
+        toggleLogin.classList.add("active");
+        toggleRegister.classList.remove("active");
+        loginPanel.classList.add("active");
+        registerPanel.classList.remove("active");
+      } else {
+        toggleRegister.classList.add("active");
+        toggleLogin.classList.remove("active");
+        registerPanel.classList.add("active");
+        loginPanel.classList.remove("active");
+        
+        // Default register Tbirth to today or empty
+        const tbirthEl = document.getElementById("registerTbirth");
+        if (tbirthEl && !tbirthEl.value) {
+          const today = new Date().toISOString().split('T')[0];
+          tbirthEl.setAttribute("max", today);
+        }
+      }
+    }
+
+    function adjustRoleFields(role) {
+      const regBtn = document.querySelector("#registerBtn .btn-text");
+      if (role === "admin") {
+        regBtn.textContent = "Register Admin & Verify Email →";
+      } else {
+        regBtn.textContent = "Register & Request OTP →";
+      }
+    }
+
+    /* Picture Upload Preview */
+    function triggerFileInput() {
+      document.getElementById("registerPicture").click();
+    }
+
+    function handleAvatarFileSelect(input) {
+      const file = input.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Image file size should be less than 5MB");
+          input.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById("avatarPreview").src = e.target.result;
+          document.getElementById("avatarPreview").style.display = "block";
+          document.getElementById("avatarPlaceholder").style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    /* Modal / Overlay Helpers */
+    function showOverlayScreen(screenId) {
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function closeOverlayScreen(screenId) {
+      document.getElementById(screenId).classList.remove("active");
+    }
+
+    function closeOtpScreen() {
+      closeOverlayScreen('otpScreen');
+      enableButtons();
+    }
+
+    /* Button Loading states */
+    function disableButtons(text) {
+      const loginBtn = document.getElementById("loginBtn");
+      const registerBtn = document.getElementById("registerBtn");
+
+      if (loginBtn) {
+        loginBtn.disabled = true;
+        if (text) loginBtn.querySelector(".btn-text").innerHTML = `<span class="spinner"></span>${text}`;
+      }
+      if (registerBtn) {
+        registerBtn.disabled = true;
+        if (text) registerBtn.querySelector(".btn-text").innerHTML = `<span class="spinner"></span>${text}`;
+      }
+    }
+
+    function enableButtons() {
+      const loginBtn = document.getElementById("loginBtn");
+      const registerBtn = document.getElementById("registerBtn");
+
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.querySelector(".btn-text").textContent = "Authenticate Portal →";
+      }
+      if (registerBtn) {
+        registerBtn.disabled = false;
+        const role = document.getElementById("registerRole").value;
+        registerBtn.querySelector(".btn-text").textContent = role === "admin" ? "Register Admin & Verify Email →" : "Register & Request OTP →";
+      }
+    }
+
+    function showError(message) {
+      const errorBox = document.getElementById("formErrorAlert");
+      errorBox.innerHTML = message;
+      errorBox.style.display = "block";
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      enableButtons();
+    }
+
+    /* SUBMIT ACTIONS */
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      document.getElementById("formErrorAlert").style.display = "none";
+      disableButtons("Authenticating...");
+
+      const email = document.getElementById("loginEmail").value;
+      const pass = document.getElementById("loginPassword").value;
+
+      try {
+        const { user, profile } = await loginUser(email, pass);
+        
+        if (profile.status === 'approved') {
+          window.location.href = "portal.html";
+        } else if (profile.status === 'pending_approval') {
+          showOverlayScreen('pendingScreen');
+          enableButtons();
+        } else if (profile.status === 'rejected') {
+          showOverlayScreen('rejectedScreen');
+          enableButtons();
+        }
+      } catch (error) {
+        console.error("Login fail:", error);
+        showError("Authentication Failed: " + (error.message || "Incorrect email or password."));
+      }
+    }
+
+    async function handleRegisterSubmit(event) {
+      event.preventDefault();
+      document.getElementById("formErrorAlert").style.display = "none";
+      disableButtons("Initiating Registration...");
+
+      const role = document.getElementById("registerRole").value;
+      const pictureFile = document.getElementById("registerPicture").files[0];
+      const name = document.getElementById("registerName").value;
+      const tbirth = document.getElementById("registerTbirth").value;
+      const alias = document.getElementById("registerAlias").value;
+      const batchname = document.getElementById("registerBatch").value;
+      const username = document.getElementById("registerUsername").value;
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+
+      // Basic client side validation
+      if (!name || !tbirth || !batchname || !username || !email || !password) {
+        showError("Please fill out all required fields.");
+        return;
+      }
+
+      registeredEmail = email;
+
+      try {
+        await registerUser({
+          email,
+          password,
+          username,
+          name,
+          tbirth,
+          alias,
+          batchname,
+          role,
+          pictureFile
+        });
+
+        // Set email label on OTP screen and show it
+        document.getElementById("otpEmailSpan").textContent = email;
+        showOverlayScreen('otpScreen');
+        
+        // Auto focus OTP input box
+        setTimeout(() => document.getElementById("otpCodeInput").focus(), 100);
+
+      } catch (error) {
+        console.error("Registration fail:", error);
+        showError("Registration Failed: " + (error.message || "An unexpected error occurred."));
+      }
+    }
+
+    async function submitOtpVerification() {
+      const verifyBtn = document.getElementById("verifyOtpBtn");
+      verifyBtn.disabled = true;
+      verifyBtn.querySelector(".btn-text").innerHTML = `<span class="spinner"></span>Verifying OTP...`;
+
+      const otpCode = document.getElementById("otpCodeInput").value.trim();
+
+      if (otpCode.length < 6) {
+        alert("Please enter the verification code (usually 6 or 8 digits).");
+        verifyBtn.disabled = false;
+        verifyBtn.querySelector(".btn-text").textContent = "Confirm Verification Code →";
+        return;
+      }
+
+      try {
+        await verifyRegistrationOtp(registeredEmail, otpCode);
+        
+        // Close OTP modal
+        closeOverlayScreen('otpScreen');
+        
+        // Open pending approval screen
+        showOverlayScreen('pendingScreen');
+      } catch (error) {
+        console.error("OTP fail:", error);
+        alert("Verification Failed: " + (error.message || "Invalid or expired OTP code."));
+        verifyBtn.disabled = false;
+        verifyBtn.querySelector(".btn-text").textContent = "Confirm Verification Code →";
+      }
+    }
+
+    async function handleResendOtp() {
+      const resendLink = document.getElementById("resendOtpLink");
+      resendLink.style.pointerEvents = "none";
+      resendLink.style.opacity = "0.5";
+      resendLink.innerHTML = "Resending code...";
+
+      try {
+        await resendRegistrationOtp(registeredEmail);
+        alert("A new 6-digit OTP code has been successfully sent to your email!");
+        
+        let secondsLeft = 60;
+        const interval = setInterval(() => {
+          secondsLeft--;
+          if (secondsLeft <= 0) {
+            clearInterval(interval);
+            resendLink.style.pointerEvents = "auto";
+            resendLink.style.opacity = "1";
+            resendLink.innerHTML = "Resend OTP Code";
+          } else {
+            resendLink.innerHTML = `Resend in ${secondsLeft}s`;
+          }
+        }, 1000);
+
+      } catch (error) {
+        console.error("Resend OTP fail:", error);
+        alert("Resend Failed: " + (error.message || "An unexpected error occurred. Please try again."));
+        resendLink.style.pointerEvents = "auto";
+        resendLink.style.opacity = "1";
+        resendLink.innerHTML = "Resend OTP Code";
+      }
+    }
+
+    /* Setup Wizard Submit */
+    function handleWizardSubmit(event) {
+      event.preventDefault();
+      
+      const sUrl = document.getElementById("wizSupabaseUrl").value;
+      const sKey = document.getElementById("wizSupabaseKey").value;
+      const cName = document.getElementById("wizCloudName").value;
+      const cPreset = document.getElementById("wizUploadPreset").value;
+
+      if (!sUrl || !sKey) {
+        alert("Supabase credentials are required.");
+        return;
+      }
+
+      // Save configurations
+      saveAppConfig(sUrl, sKey, cName, cPreset);
+      
+      // Reload
+      window.location.reload();
+    }
+  </script>
+
+  <!-- DATA PRIVACY POLICY MODAL -->
+  <div class="overlay-screen" id="privacyModal">
+    <div class="overlay-card" style="text-align: left; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+      <h3 class="overlay-title" style="margin-bottom: 20px; font-family: 'Cinzel', serif; color: var(--gold); border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 10px;">
+        🛡️ DATA PRIVACY POLICY
+      </h3>
+      <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6; display: flex; flex-direction: column; gap: 14px;">
+        <p><strong>Tau Gamma Phi - Asia 2 Community Chapter</strong> ("we", "our") is committed to protecting your personal data in compliance with the <strong>Philippine Data Privacy Act of 2012 (RA 10173)</strong>.</p>
+        
+        <div>
+          <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">1. Information We Collect</h4>
+          <p>When you register on the portal or submit our contact form, we securely collect: Full Name, Email, Triskelion Birthdate (membership date), Batch Name, Alias, and Profile Credentials.</p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">2. Purpose of Collection</h4>
+          <p>Your details are processed exclusively for: official chapter record-keeping, verification of membership, fraternity feed updates, contribution logging, and responding to website inquiries.</p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">3. Data Security & Storage</h4>
+          <p>All data is hosted securely using enterprise-grade Supabase servers with Row-Level Security (RLS) policies. Only authorized chapter officers can access or manage dashboard logs.</p>
+        </div>
+
+        <div>
+          <h4 style="color: var(--white); margin-bottom: 5px; font-size: 13px;">4. Your Privacy Rights</h4>
+          <p>Under the Data Privacy Act, you have the right to request access to your data, request correction of erroneous profiles, or demand permanent erasure of your portal data at any time.</p>
+        </div>
+
+        <p style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; font-size: 11px;">For any data protection inquiries, contact the chapter administrator at <strong>jemisa@sscrcan.edu.ph</strong>.</p>
+      </div>
+      <button class="btn-gold" onclick="closeOverlayScreen('privacyModal')" style="width: 100%; margin-top: 20px; font-family:'Cinzel', serif; font-size:11px; padding:12px; cursor:pointer;">
+        I Accept & Close
+      </button>
+    </div>
+  </div>
+</body>
+</html>
