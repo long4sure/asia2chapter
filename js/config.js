@@ -4,12 +4,12 @@
 
 const CONFIG = {
   // Replace these with your actual Supabase project credentials for production:
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://twluqdzmzfdavuydewmo.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3bHVxZHptemZkYXZ1eWRld21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNTM1NTUsImV4cCI6MjA5NDcyOTU1NX0.PYtIBkUpPMS1kmIZ0VqORzp3nvB5InhM_d1A2qQB89o",
 
   // Replace these with your Cloudinary credentials for unsigned uploads:
-  CLOUDINARY_CLOUD_NAME: "",
-  CLOUDINARY_UPLOAD_PRESET: "", // Unsigned upload preset
+  CLOUDINARY_CLOUD_NAME: "dwblflnjl",
+  CLOUDINARY_UPLOAD_PRESET: "asia2chapter", // Unsigned upload preset
 };
 
 // Helper function to get configuration keys, checking localStorage first
@@ -35,8 +35,8 @@ function getAppConfig() {
 function isConfigured() {
   const current = getAppConfig();
   return (
-    current.SUPABASE_URL && 
-    current.SUPABASE_ANON_KEY && 
+    current.SUPABASE_URL &&
+    current.SUPABASE_ANON_KEY &&
     !current.SUPABASE_URL.includes("YOUR_") &&
     !current.SUPABASE_ANON_KEY.includes("YOUR_")
   );
