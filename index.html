@@ -7,12 +7,16 @@
   <meta name="description" content="Tau Gamma Phi Triskelion Grand Fraternity – Asia 2 Community Chapter. Brotherhood, service, and community.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet"></noscript>
+  <!-- Preload LCP Image -->
+  <link rel="preload" href="images/hero1.jpg" as="image">
+  
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/chatbot.css">
   
-  <!-- Supabase CDN Client Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase CDN Client Library (deferred - non-blocking) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 <body>
 
@@ -58,9 +62,9 @@
   <div class="hero-bg-slider">
     <div class="hero-bg-track" id="heroBgTrack">
       <div class="hero-bg-slide" style="background-image:url('images/hero1.jpg')"></div>
-      <div class="hero-bg-slide" style="background-image:url('images/hero2.jpg')"></div>
-      <div class="hero-bg-slide" style="background-image:url('images/hero3.jpg')"></div>
-      <div class="hero-bg-slide" style="background-image:url('images/hero4.jpg')"></div>
+      <div class="hero-bg-slide" data-bg="images/hero2.jpg"></div>
+      <div class="hero-bg-slide" data-bg="images/hero3.jpg"></div>
+      <div class="hero-bg-slide" data-bg="images/hero4.jpg"></div>
     </div>
     <div class="hero-bg-overlay"></div>
   </div>
@@ -243,11 +247,11 @@
         <div class="project-img project-img-cleanup">
           <div class="slider-wrap" id="cleanupSlider">
             <div class="slider-track" id="cleanupTrack">
-              <img src="images/projects/cleanup1.jpg" alt="Clean-Up Drive">
-              <img src="images/projects/cleanup2.jpg" alt="Clean-Up Drive">
-              <img src="images/projects/cleanup3.jpg" alt="Clean-Up Drive">
-              <img src="images/projects/cleanup4.jpg" alt="Clean-Up Drive">
-              <img src="images/projects/cleanup5.jpg" alt="Clean-Up Drive">
+              <img src="images/projects/cleanup1.jpg" alt="Clean-Up Drive" loading="lazy">
+              <img src="images/projects/cleanup2.jpg" alt="Clean-Up Drive" loading="lazy">
+              <img src="images/projects/cleanup3.jpg" alt="Clean-Up Drive" loading="lazy">
+              <img src="images/projects/cleanup4.jpg" alt="Clean-Up Drive" loading="lazy">
+              <img src="images/projects/cleanup5.jpg" alt="Clean-Up Drive" loading="lazy">
             </div>
             <button class="slider-btn prev" onclick="slidePhoto('cleanup',-1)">&#8592;</button>
             <button class="slider-btn next" onclick="slidePhoto('cleanup',1)">&#8594;</button>
@@ -272,11 +276,11 @@
         <div class="project-img project-img-breakfast">
           <div class="slider-wrap" id="breakfastSlider">
             <div class="slider-track" id="breakfastTrack">
-              <img src="images/projects/freebrakfast1.jpg" alt="Libreng Almusal">
-              <img src="images/projects/freebrakfast2.jpg" alt="Libreng Almusal">
-              <img src="images/projects/freebrakfast3.jpg" alt="Libreng Almusal">
-              <img src="images/projects/freebrakfast4.jpg" alt="Libreng Almusal">
-              <img src="images/projects/freebrakfast5.jpg" alt="Libreng Almusal">
+              <img src="images/projects/freebrakfast1.jpg" alt="Libreng Almusal" loading="lazy">
+              <img src="images/projects/freebrakfast2.jpg" alt="Libreng Almusal" loading="lazy">
+              <img src="images/projects/freebrakfast3.jpg" alt="Libreng Almusal" loading="lazy">
+              <img src="images/projects/freebrakfast4.jpg" alt="Libreng Almusal" loading="lazy">
+              <img src="images/projects/freebrakfast5.jpg" alt="Libreng Almusal" loading="lazy">
             </div>
             <button class="slider-btn prev" onclick="slidePhoto('breakfast',-1)">&#8592;</button>
             <button class="slider-btn next" onclick="slidePhoto('breakfast',1)">&#8594;</button>
@@ -586,11 +590,11 @@
   </div>
 </div>
 
-<!-- Scripts -->
-<script src="js/config.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/members.js"></script>
-<script src="js/main.js"></script>
-<script src="js/chatbot.js"></script>
+<!-- Scripts (deferred for faster page load) -->
+<script src="js/config.js" defer></script>
+<script src="js/supabase-client.js" defer></script>
+<script src="js/members.js" defer></script>
+<script src="js/main.js" defer></script>
+<script src="js/chatbot.js" defer></script>
 </body>
 </html>

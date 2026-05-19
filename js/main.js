@@ -49,6 +49,14 @@ function initHeroSlider() {
       s.style.opacity = '0';
       s.style.position = 'absolute';
       s.style.inset = '0';
+      
+      // Lazy load background image
+      const bg = s.getAttribute('data-bg');
+      if (bg) {
+        setTimeout(() => {
+          s.style.backgroundImage = `url('${bg}')`;
+        }, 1000 + (i * 500)); // Stagger loading
+      }
     }
   });
   track.style.position = 'relative';

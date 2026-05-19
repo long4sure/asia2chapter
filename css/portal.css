@@ -68,6 +68,20 @@
   display: flex; flex-direction: column; gap: 8px;
   overflow-y: auto;
 }
+.sidebar-menu::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 3px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
 .menu-item {
   display: flex; align-items: center; gap: 14px;
   padding: 12px 16px; border-radius: 6px;

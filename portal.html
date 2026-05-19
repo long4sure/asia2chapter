@@ -168,72 +168,118 @@
               </div>
             </div>
 
-            <!-- Right Side editable details -->
-            <div class="edit-profile-card">
-              <h3 style="font-family:'Cinzel', serif; font-size:18px; color:var(--white); border-bottom:1px solid rgba(201,168,76,0.15); padding-bottom:12px; margin-bottom:24px;">EDIT PROFILE DETAILS</h3>
+            <!-- Right Side premium details view / edit -->
+            <div style="flex: 1;">
               
-              <form id="editProfileForm" onsubmit="handleEditProfileSubmit(event)">
-                <!-- Avatar Editing -->
-                <div class="avatar-upload-wrap" style="margin-bottom:32px;">
-                  <span class="avatar-label">Change Profile Picture</span>
-                  <div class="avatar-preview-box" onclick="triggerEditAvatarInput()">
-                    <img id="editAvatarPreview" alt="Avatar">
-                  </div>
-                  <input type="file" id="editAvatarFile" class="avatar-file-input" accept="image/*" onchange="handleEditAvatarSelect(this)">
-                </div>
-
-                <div class="input-row">
-                  <div class="input-group">
-                    <label for="editName">Full Name</label>
-                    <input type="text" id="editName" required>
-                  </div>
-                  <div class="input-group">
-                    <label for="editTbirth">Triskelion Birth Date</label>
-                    <input type="date" id="editTbirth" required>
-                  </div>
-                </div>
-
-                <div class="input-row">
-                  <div class="input-group">
-                    <label for="editAlias">Alias / Nickname</label>
-                    <input type="text" id="editAlias" required>
-                  </div>
-                  <div class="input-group">
-                    <label for="editBatch">Batch Name</label>
-                    <input type="text" id="editBatch" required>
-                  </div>
-                </div>
-
-                <div class="input-row">
-                  <div class="input-group">
-                    <label for="editUsername">Username</label>
-                    <input type="text" id="editUsername" required>
-                  </div>
-                  <div class="input-group">
-                    <label for="editEmail">Email Address</label>
-                    <input type="email" id="editEmail" required>
-                  </div>
-                </div>
-
-                <div class="input-group">
-                  <label for="editPassword">Change Password (leave blank to keep current)</label>
-                  <input type="password" id="editPassword" placeholder="New Password (min 6 characters)">
-                </div>
-
-                <button type="submit" class="btn-gold" id="saveProfileBtn" style="width:100%; margin-top:12px;">
-                  <span class="btn-text">Save Profile Changes →</span>
+              <!-- 3A. VIEW PROFILE CARD -->
+              <div class="edit-profile-card" id="profileViewCard" style="position: relative; overflow: hidden; padding: 32px;">
+                <!-- Absolute Edit Button -->
+                <button class="table-btn" onclick="toggleProfileEdit(true)" style="position: absolute; top: 24px; right: 24px; padding: 8px 16px; font-weight: bold; border-color: var(--gold-dark); color: var(--gold); display: flex; align-items: center; gap: 8px; font-size: 10px; cursor: pointer;">
+                  <i class="fa-solid fa-pen-to-square"></i> EDIT PROFILE
                 </button>
-              </form>
 
-              <!-- Danger Zone -->
-              <div class="danger-zone-card">
-                <div class="danger-zone-text">
-                  <h4>Delete Portal Account</h4>
-                  <p>Permanently removes your profile data. This action is irreversible.</p>
+                <div style="text-align: center; margin-bottom: 28px; margin-top: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <div class="sidebar-avatar" id="viewProfileAvatar" style="width: 100px; height: 100px; border-width: 3px; border-color: var(--gold); box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 12px; margin-left: 0; margin-right: 0;">T</div>
+                  <h2 id="viewProfileName" style="font-family: 'Cinzel', serif; font-size: 20px; color: var(--white); margin-bottom: 6px; letter-spacing: 1px;">Brother Name</h2>
+                  <span id="viewProfileRoleBadge" class="sidebar-role-badge user" style="font-size: 9px; padding: 4px 12px; border-radius: 20px;">Brother</span>
                 </div>
-                <button class="table-btn danger" onclick="triggerDeleteAccount()" style="padding: 10px 18px; font-weight:bold;">
-                  Delete Account
-                </button>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid rgba(201,168,76,0.1); padding-top: 24px;">
+                  <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 6px;">
+                    <span style="font-size: 8px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 1px;"><i class="fa-solid fa-calendar-days" style="color: var(--gold); margin-right: 6px;"></i> Triskelion Birth</span>
+                    <strong id="viewProfileTbirth" style="font-size: 12px; color: var(--white);">October 4, 2020</strong>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 6px;">
+                    <span style="font-size: 8px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 1px;"><i class="fa-solid fa-masks-theater" style="color: var(--gold); margin-right: 6px;"></i> Alias / Nickname</span>
+                    <strong id="viewProfileAlias" style="font-size: 12px; color: var(--white);">Alias</strong>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 6px;">
+                    <span style="font-size: 8px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 1px;"><i class="fa-solid fa-users-viewfinder" style="color: var(--gold); margin-right: 6px;"></i> Batch Name</span>
+                    <strong id="viewProfileBatch" style="font-size: 12px; color: var(--white);">Batch</strong>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 6px;">
+                    <span style="font-size: 8px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 1px;"><i class="fa-solid fa-at" style="color: var(--gold); margin-right: 6px;"></i> Username</span>
+                    <strong id="viewProfileUsername" style="font-size: 12px; color: var(--white);">username</strong>
+                  </div>
+                  <div style="grid-column: 1 / -1; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 6px;">
+                    <span style="font-size: 8px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 4px; letter-spacing: 1px;"><i class="fa-solid fa-envelope" style="color: var(--gold); margin-right: 6px;"></i> Email Address</span>
+                    <strong id="viewProfileEmail" style="font-size: 12px; color: var(--white);">email@gmail.com</strong>
+                  </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone-card" style="margin-top: 24px; border-top: 1px solid rgba(255,75,75,0.1); padding-top: 20px;">
+                  <div class="danger-zone-text">
+                    <h4 style="font-size: 12px;">Delete Portal Account</h4>
+                    <p style="font-size: 10px;">Permanently removes your profile data. This action is irreversible.</p>
+                  </div>
+                  <button class="table-btn danger" onclick="triggerDeleteAccount()" style="padding: 10px 18px; font-weight:bold; font-size: 10px; cursor: pointer;">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+
+              <!-- 3B. EDIT PROFILE CARD -->
+              <div class="edit-profile-card" id="profileEditCard" style="display: none; padding: 32px;">
+                <h3 style="font-family:'Cinzel', serif; font-size:18px; color:var(--white); border-bottom:1px solid rgba(201,168,76,0.15); padding-bottom:12px; margin-bottom:24px;">EDIT PROFILE DETAILS</h3>
+                
+                <form id="editProfileForm" onsubmit="handleEditProfileSubmit(event)">
+                  <!-- Avatar Editing -->
+                  <div class="avatar-upload-wrap" style="margin-bottom:32px;">
+                    <span class="avatar-label">Change Profile Picture</span>
+                    <div class="avatar-preview-box" onclick="triggerEditAvatarInput()">
+                      <img id="editAvatarPreview" alt="Avatar">
+                    </div>
+                    <input type="file" id="editAvatarFile" class="avatar-file-input" accept="image/*" onchange="handleEditAvatarSelect(this)">
+                  </div>
+
+                  <div class="input-row">
+                    <div class="input-group">
+                      <label for="editName">Full Name</label>
+                      <input type="text" id="editName" required>
+                    </div>
+                    <div class="input-group">
+                      <label for="editTbirth">Triskelion Birth Date</label>
+                      <input type="date" id="editTbirth" required>
+                    </div>
+                  </div>
+
+                  <div class="input-row">
+                    <div class="input-group">
+                      <label for="editAlias">Alias / Nickname</label>
+                      <input type="text" id="editAlias" required>
+                    </div>
+                    <div class="input-group">
+                      <label for="editBatch">Batch Name</label>
+                      <input type="text" id="editBatch" required>
+                    </div>
+                  </div>
+
+                  <div class="input-row">
+                    <div class="input-group">
+                      <label for="editUsername">Username</label>
+                      <input type="text" id="editUsername" required>
+                    </div>
+                    <div class="input-group">
+                      <label for="editEmail">Email Address</label>
+                      <input type="email" id="editEmail" required>
+                    </div>
+                  </div>
+
+                  <div class="input-group">
+                    <label for="editPassword">Change Password (leave blank to keep current)</label>
+                    <input type="password" id="editPassword" placeholder="New Password (min 6 characters)">
+                  </div>
+
+                  <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="submit" class="btn-gold" id="saveProfileBtn" style="flex: 1; margin: 0; font-size: 11px;">
+                      <span class="btn-text">Save Changes</span>
+                    </button>
+                    <button type="button" class="btn-outline" onclick="toggleProfileEdit(false)" style="flex: 1; margin: 0; border-color: rgba(255,255,255,0.1); color: var(--text); font-size: 11px; cursor: pointer;">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
               </div>
 
             </div>
@@ -841,23 +887,29 @@
     }
 
     async function loadProfileTab() {
-      // 1. Populate editable fields
+      // 1. Populate VIEW card
+      populateProfileViewCard();
+
+      // 2. Populate editable fields
       document.getElementById("editName").value = currentUserProfile.name;
-      document.getElementById("editTbirth").value = currentUserProfile.tbirth;
+      document.getElementById("editTbirth").value = currentUserProfile.tbirth || "";
       document.getElementById("editAlias").value = currentUserProfile.alias || "";
-      document.getElementById("editBatch").value = currentUserProfile.batchname;
-      document.getElementById("editUsername").value = currentUserProfile.username;
-      document.getElementById("editEmail").value = currentUserProfile.email;
+      document.getElementById("editBatch").value = currentUserProfile.batchname || "";
+      document.getElementById("editUsername").value = currentUserProfile.username || "";
+      document.getElementById("editEmail").value = currentUserProfile.email || "";
       document.getElementById("editPassword").value = "";
 
       const editPreview = document.getElementById("editAvatarPreview");
       if (currentUserProfile.picture_url) {
         editPreview.src = currentUserProfile.picture_url;
       } else {
-        editPreview.src = "images/asia2logo.png"; // Fallback preview
+        editPreview.src = "images/asia2logo.png";
       }
 
-      // 2. Load Contribution list
+      // 3. Start in VIEW mode
+      toggleProfileEdit(false);
+
+      // 4. Load Contribution list
       await refreshProfileContributions();
     }
 
@@ -917,21 +969,22 @@
         });
 
         alert("Profile updated successfully!");
-        
+
         // Re-load session
         const sessionData = await getCurrentUserSession();
         currentUserProfile = sessionData.profile;
-        
-        // Update Sidebar UI and profile fields
+
+        // Update Sidebar UI, repopulate fields, and switch back to view mode
         updateSidebarProfileUI();
         await loadProfileTab();
-        
+        toggleProfileEdit(false);
+
       } catch (error) {
         console.error("Update fail:", error);
         alert("Failed to update profile: " + error.message);
       } finally {
         saveBtn.disabled = false;
-        saveBtn.querySelector(".btn-text").textContent = "Save Profile Changes →";
+        saveBtn.querySelector(".btn-text").textContent = "Save Changes";
       }
     }
 
@@ -952,9 +1005,6 @@
       }
     }
 
-    /* ==========================================
-       TAB 4: ADMIN SYSTEMS & CRUD
-       ========================================== */
     let adminActiveSubtab = 'approvals';
 
     function switchAdminSubtab(subtabId) {
@@ -968,12 +1018,21 @@
       panels.forEach(p => p.classList.remove("active"));
       document.getElementById("adminSub_" + subtabId).classList.add("active");
 
+      // Mark notifications as seen
+      if (subtabId === 'messages') {
+        hasSeenMessages = true;
+      } else if (subtabId === 'approvals') {
+        hasSeenApprovals = true;
+      }
+
       refreshAdminSubtabData();
+      updateAdminBadges();
     }
 
     async function loadAdminTab() {
       switchAdminSubtab('approvals');
     }
+
 
     async function refreshAdminSubtabData() {
       if (adminActiveSubtab === 'approvals') {
@@ -1462,17 +1521,20 @@
     /* ==========================================
        ADMIN BADGES & NOTIFICATIONS
        ========================================== */
+    let hasSeenApprovals = false;
+    let hasSeenMessages = false;
+
     async function updateAdminBadges() {
       if (currentUserProfile && currentUserProfile.role === 'admin') {
         try {
           const pending = await adminGetPendingRegistrations();
           const messages = await adminGetAllMessages();
-          
-          const pendingCount = pending ? pending.length : 0;
-          const messagesCount = messages ? messages.length : 0;
+
+          const pendingCount = (pending && !hasSeenApprovals) ? pending.length : 0;
+          const messagesCount = (messages && !hasSeenMessages) ? messages.length : 0;
           const totalAlerts = pendingCount + messagesCount;
-          
-          // Update sidebar badge
+
+          // Sidebar badge
           const sidebarBadge = document.getElementById("adminSidebarBadge");
           if (sidebarBadge) {
             if (totalAlerts > 0) {
@@ -1482,8 +1544,8 @@
               sidebarBadge.style.display = "none";
             }
           }
-          
-          // Update subtab approvals badge
+
+          // Approvals subtab badge
           const approvalsBadge = document.getElementById("adminApprovalsBadge");
           if (approvalsBadge) {
             if (pendingCount > 0) {
@@ -1493,8 +1555,8 @@
               approvalsBadge.style.display = "none";
             }
           }
-          
-          // Update subtab messages badge
+
+          // Messages subtab badge
           const messagesBadge = document.getElementById("adminMessagesBadge");
           if (messagesBadge) {
             if (messagesCount > 0) {
@@ -1521,10 +1583,10 @@
 
     async function handleReportIssueSubmit(event) {
       event.preventDefault();
-      
+
       const submitBtn = document.getElementById("reportIssueBtn");
       const btnText = submitBtn.querySelector(".btn-text");
-      
+
       submitBtn.disabled = true;
       btnText.innerHTML = `<span class="spinner"></span>Sending Report...`;
 
@@ -1542,8 +1604,7 @@
         await submitContactMessage(reportData);
         alert("Salute, Brother! Your issue report has been securely sent to the Chapter Officers.");
         closeOverlayScreen("reportIssueModal");
-        
-        // Refresh badges if user is admin
+        hasSeenMessages = false; // reset so admin sees new badge
         await updateAdminBadges();
       } catch (error) {
         console.error("Report issue failed:", error);
@@ -1551,6 +1612,55 @@
       } finally {
         submitBtn.disabled = false;
         btnText.textContent = "Send Report to Officers →";
+      }
+    }
+
+    /* ==========================================
+       PROFILE VIEW / EDIT TOGGLE
+       ========================================== */
+    function toggleProfileEdit(showEdit) {
+      document.getElementById("profileViewCard").style.display = showEdit ? "none" : "block";
+      document.getElementById("profileEditCard").style.display = showEdit ? "block" : "none";
+      if (!showEdit) {
+        // refresh view card when canceling
+        populateProfileViewCard();
+      }
+    }
+
+    function populateProfileViewCard() {
+      const p = currentUserProfile;
+      if (!p) return;
+
+      // Avatar
+      const viewAvatar = document.getElementById("viewProfileAvatar");
+      if (p.picture_url) {
+        viewAvatar.innerHTML = `<img src="${p.picture_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`;
+      } else {
+        viewAvatar.textContent = p.name ? p.name.charAt(0).toUpperCase() : "?";
+      }
+
+      document.getElementById("viewProfileName").textContent = p.name || "Brother";
+      document.getElementById("viewProfileAlias").textContent = p.alias || "—";
+      document.getElementById("viewProfileBatch").textContent = p.batchname || "—";
+      document.getElementById("viewProfileUsername").textContent = p.username || "—";
+      document.getElementById("viewProfileEmail").textContent = p.email || "—";
+
+      // Triskelion birth - format nicely
+      if (p.tbirth) {
+        const d = new Date(p.tbirth + "T00:00:00");
+        document.getElementById("viewProfileTbirth").textContent = d.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+      } else {
+        document.getElementById("viewProfileTbirth").textContent = "—";
+      }
+
+      // Role badge
+      const roleBadge = document.getElementById("viewProfileRoleBadge");
+      if (p.role === 'admin') {
+        roleBadge.textContent = "Officer / Admin";
+        roleBadge.className = "sidebar-role-badge admin";
+      } else {
+        roleBadge.textContent = "Brother";
+        roleBadge.className = "sidebar-role-badge user";
       }
     }
 
