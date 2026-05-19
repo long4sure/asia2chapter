@@ -553,6 +553,32 @@
     </div>
   </div>
 
+  <!-- ===================== CUSTOM ADMIN MODALS ===================== -->
+  <div class="overlay-screen" id="customAlertModal" style="z-index: 11000;">
+    <div class="overlay-card" style="max-width:400px; border-top: 4px solid var(--gold);">
+      <h2 class="overlay-title" id="customAlertTitle" style="font-size:18px; margin-bottom: 12px;">Alert</h2>
+      <p class="overlay-desc" id="customAlertMessage" style="text-align: left; font-size:13.5px; margin-bottom: 24px; color:var(--text-light);"></p>
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('customAlertModal')" style="width: 100%;">
+        Okay
+      </button>
+    </div>
+  </div>
+
+  <div class="overlay-screen" id="customConfirmModal" style="z-index: 11000;">
+    <div class="overlay-card" style="max-width:450px; border-top: 4px solid var(--gold);">
+      <h2 class="overlay-title" id="customConfirmTitle" style="font-size:18px; margin-bottom: 12px;">Confirm Action</h2>
+      <p class="overlay-desc" id="customConfirmMessage" style="text-align: left; font-size:13.5px; margin-bottom: 24px; color:var(--text-light); line-height: 1.6;"></p>
+      <div style="display:flex; gap:12px;">
+        <button type="button" class="btn-outline" onclick="closeOverlayScreen('customConfirmModal')" style="flex:1; border-color:transparent; color:var(--text-muted);">
+          Cancel
+        </button>
+        <button type="button" class="btn-gold" id="customConfirmBtn" style="flex:1;">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/config.js"></script>
   <script src="js/supabase-client.js"></script>
@@ -568,6 +594,37 @@
 
     function closeOverlayScreen(screenId) {
       document.getElementById(screenId).classList.remove("active");
+    }
+
+    function showCustomAlert(title, message) {
+      document.getElementById("customAlertTitle").textContent = title;
+      document.getElementById("customAlertMessage").innerHTML = message;
+      showOverlayScreen("customAlertModal");
+    }
+
+    function showCustomConfirm(title, message, confirmBtnText, isDanger, onConfirmCallback) {
+      document.getElementById("customConfirmTitle").textContent = title;
+      document.getElementById("customConfirmMessage").innerHTML = message;
+      
+      const btn = document.getElementById("customConfirmBtn");
+      btn.textContent = confirmBtnText;
+      
+      if (isDanger) {
+        btn.style.background = "#ff4b4b";
+        btn.style.color = "white";
+        document.getElementById("customConfirmTitle").style.color = "#ff7e7e";
+      } else {
+        btn.style.background = "var(--gold)";
+        btn.style.color = "var(--bg-color)";
+        document.getElementById("customConfirmTitle").style.color = "var(--gold)";
+      }
+
+      btn.onclick = () => {
+        closeOverlayScreen("customConfirmModal");
+        if (onConfirmCallback) onConfirmCallback();
+      };
+      
+      showOverlayScreen("customConfirmModal");
     }
 
     // Load active session on init
@@ -1120,26 +1177,28 @@
     }
 
     async function handleAdminDecision(userId, decision) {
-      const confirmMsg = decision === 'approve' 
+      const isApprove = decision === 'approve';
+      const title = isApprove ? "Approve Registration" : "Reject Registration";
+      const confirmMsg = isApprove 
         ? "Approve this user for portal access?" 
         : "REJECT and deny access to this registration?";
       
-      if (confirm(confirmMsg)) {
+      showCustomConfirm(title, confirmMsg, isApprove ? "Yes, Approve" : "Yes, Reject", !isApprove, async () => {
         try {
-          if (decision === 'approve') {
+          if (isApprove) {
             await adminApproveUser(userId, currentUserProfile.id, currentUserProfile.email);
-            alert("Registration Approved Successfully!");
+            showCustomAlert("Success", "Registration Approved Successfully!");
           } else {
             await adminRejectUser(userId, currentUserProfile.id, currentUserProfile.email);
-            alert("Registration Rejected & Denied Access.");
+            showCustomAlert("Rejected", "Registration Rejected & Denied Access.");
           }
           await refreshAdminSubtabData();
           await updateAdminBadges();
         } catch (error) {
           console.error("Decision fail:", error);
-          alert("Action failed: " + error.message);
+          showCustomAlert("Error", "Action failed: " + error.message);
         }
-      }
+      });
     }
 
     /* 4B. SUBTAB: USERS CRUD */
@@ -1227,16 +1286,22 @@
     }
 
     async function handleAdminDeleteUser(userId) {
-      if (confirm("🚨 WARNING: Are you sure you want to delete this user profile? This will mark their profile status as 'deleted' and permanently remove their authentication records.")) {
-        try {
-          await adminDeleteProfile(userId, currentUserProfile.id, currentUserProfile.email);
-          alert("Member profile successfully deleted.");
-          await refreshAdminSubtabData();
-        } catch (error) {
-          console.error("Admin delete fail:", error);
-          alert("Deletion failed: " + error.message);
+      showCustomConfirm(
+        "Delete User Profile",
+        "🚨 <strong>WARNING:</strong> Are you sure you want to delete this user profile? This will mark their profile status as 'deleted' and permanently remove their authentication records.",
+        "Permanently Delete",
+        true,
+        async () => {
+          try {
+            await adminDeleteProfile(userId, currentUserProfile.id, currentUserProfile.email);
+            showCustomAlert("Success", "Member profile successfully deleted.");
+            await refreshAdminSubtabData();
+          } catch (error) {
+            console.error("Admin delete fail:", error);
+            showCustomAlert("Deletion Failed", error.message);
+          }
         }
-      }
+      );
     }
 
     /* 4C. SUBTAB: CONTRIBUTIONS CRUD */

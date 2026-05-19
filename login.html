@@ -189,6 +189,21 @@
     </div>
   </div>
 
+  <!-- REGISTRATION SUCCESS SCREEN -->
+  <div class="overlay-screen" id="successScreen">
+    <div class="overlay-card" style="max-width:520px;">
+      <div class="overlay-icon" style="color:var(--gold);"><i class="fa-solid fa-check-circle"></i></div>
+      <h2 class="overlay-title">REGISTRATION SUCCESSFUL</h2>
+      <p class="overlay-desc" style="text-align: left; font-size:13.5px; line-height:1.7;">
+        Salute, Brother! Your account has been created successfully.<br><br>
+        For security and to preserve the integrity of the chapter, your account must be reviewed and <strong>approved</strong> by the Chapter Admin before you can log in.
+      </p>
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('successScreen'); switchForm('login');" style="width: 100%;">
+        Return to Login
+      </button>
+    </div>
+  </div>
+
   <!-- PENDING APPROVAL SCREEN -->
   <div class="overlay-screen" id="pendingScreen">
     <div class="overlay-card" style="max-width:520px;">
@@ -483,9 +498,8 @@
           pictureFile
         });
 
-        // Show success and redirect to login panel
-        alert("Registration Successful! Your account is now Pending Approval by the Chapter Admin.");
-        toggleAuthPanel('login');
+        // Show nice success modal
+        showOverlayScreen('successScreen');
         
         // Reset form
         document.getElementById("registerForm").reset();
