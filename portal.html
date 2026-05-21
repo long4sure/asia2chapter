@@ -838,6 +838,48 @@
             ? `<img src="${p.image_url}" class="status-attachment-img" alt="Post attachment">`
             : "";
 
+          // Sort comments chronologically (oldest first)
+          const sortedComments = (p.post_comments || []).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+          // Comments List HTML
+          const commentsListHtml = sortedComments.map(c => {
+            const cProfile = c.profiles || {};
+            const cName = cProfile.name || "Brother";
+            const cAlias = cProfile.alias ? `Bro. ${cProfile.alias}` : "Active Brother";
+            const cInitial = cName.charAt(0).toUpperCase();
+            const cAvatar = cProfile.picture_url
+              ? `<img src="${cProfile.picture_url}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" alt="${cName}">`
+              : `<div style="width: 24px; height: 24px; border-radius: 50%; background: var(--gold-dark); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; border: 1px solid var(--gold-dark);">${cInitial}</div>`;
+            const cDate = new Date(c.created_at).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+            
+            // Delete button for comment owner or admin
+            const isCommentOwner = c.user_id === currentUserProfile.id;
+            const isAdmin = currentUserProfile.role === 'admin';
+            const deleteBtn = (isCommentOwner || isAdmin)
+              ? `<button type="button" onclick="handleDeleteComment('${c.id}', '${p.id}')" style="background:none; border:none; color:#e57373; font-size:10px; cursor:pointer; padding:2px 6px; border-radius:3px; transition:all 0.2s;" title="Delete Comment"><i class="fa-regular fa-trash-can"></i></button>`
+              : "";
+
+            return `
+              <div class="comment-item" style="display: flex; gap: 10px; align-items: flex-start; padding: 8px 12px; background: rgba(255,255,255,0.015); border-radius: 6px; border: 1px solid rgba(255,255,255,0.02);">
+                <div class="comment-avatar" style="flex-shrink:0;">${cAvatar}</div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; gap: 8px;">
+                    <span style="font-size: 11px; font-weight: bold; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      ${cName} <span style="font-size: 9px; color: var(--gold-light); font-weight: normal; margin-left: 2px;">(${cAlias})</span>
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                      <span style="font-size: 9.5px; color: var(--text-muted);">${cDate}</span>
+                      ${deleteBtn}
+                    </div>
+                  </div>
+                  <div style="font-size: 11.5px; color: rgba(255,255,255,0.85); line-height: 1.5; word-break: break-word;">
+                    ${c.content.replace(/\n/g, '<br>')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
           return `
             <div class="status-card">
               <div class="status-card-top">
@@ -854,9 +896,41 @@
                 ${p.content.replace(/\n/g, '<br>')}
               </div>
               ${imageTag}
+              
+              <!-- Post Actions Footer -->
+              <div class="status-card-actions" style="margin-top: 16px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: flex-start;">
+                <button type="button" onclick="toggleComments('${p.id}')" style="background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); color: var(--gold-light); font-size: 10.5px; font-family: 'Cinzel', serif; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 4px; transition: all 0.3s; letter-spacing:1px; text-transform:uppercase;" onmouseover="this.style.background='rgba(201,168,76,0.15)'; this.style.borderColor='var(--gold)';" onmouseout="this.style.background='rgba(201,168,76,0.06)'; this.style.borderColor='rgba(201,168,76,0.15)';">
+                  <i class="fa-regular fa-comment"></i>
+                  <span>Comment</span> 
+                  <span style="background: var(--gold-dark); color: var(--white); font-size: 9px; padding: 1px 6px; border-radius: 10px; font-weight: bold;" id="comment-count-${p.id}">${(p.post_comments || []).length}</span>
+                </button>
+              </div>
+
+              <!-- Collapsible Comments Section -->
+              <div class="comments-section" id="comments-section-${p.id}" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed rgba(201,168,76,0.15);">
+                <div class="comments-list" id="comments-list-${p.id}" style="display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px;">
+                  ${commentsListHtml || `<div style="font-size:10.5px; text-align:center; color:var(--text-muted); padding:16px 0;" id="no-comments-fallback-${p.id}"><i class="fa-regular fa-comments" style="margin-right:6px; color:var(--gold-light);"></i>No comments yet. Start the conversation!</div>`}
+                </div>
+                
+                <!-- Comment Input Area -->
+                <form onsubmit="submitComment(event, '${p.id}')" style="display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.03);">
+                  <input type="text" id="comment-input-${p.id}" placeholder="Write a status comment..." required style="flex: 1; padding: 6px 4px; background: transparent; border: none; color: var(--white); font-size: 11.5px; outline: none;" autocomplete="off">
+                  <button type="submit" class="btn-gold" style="padding: 6px 16px; border-radius: 20px; font-size: 9px; width: auto; font-family:'Cinzel', serif; letter-spacing:1px; cursor:pointer;">Send</button>
+                </form>
+              </div>
             </div>
           `;
         }).join('');
+
+        // Restore expanded comments sections and scroll to bottom
+        expandedPostIds.forEach(postId => {
+          const section = document.getElementById(`comments-section-${postId}`);
+          if (section) {
+            section.style.display = "block";
+            const list = document.getElementById(`comments-list-${postId}`);
+            if (list) list.scrollTop = list.scrollHeight;
+          }
+        });
 
       } catch (error) {
         console.error("Error loading status updates:", error);
@@ -865,6 +939,71 @@
             Failed to fetch status updates. Please check connection.
           </div>
         `;
+      }
+    }
+
+    // Keep track of expanded comment sections so they stay expanded after refreshing the list
+    let expandedPostIds = new Set();
+
+    function toggleComments(postId) {
+      const section = document.getElementById(`comments-section-${postId}`);
+      if (section) {
+        if (section.style.display === "none") {
+          section.style.display = "block";
+          expandedPostIds.add(postId);
+          // Scroll comments list to bottom
+          const list = document.getElementById(`comments-list-${postId}`);
+          if (list) list.scrollTop = list.scrollHeight;
+          // Auto focus the input field
+          const input = document.getElementById(`comment-input-${postId}`);
+          if (input) input.focus();
+        } else {
+          section.style.display = "none";
+          expandedPostIds.delete(postId);
+        }
+      }
+    }
+
+    async function submitComment(event, postId) {
+      event.preventDefault();
+      const input = document.getElementById(`comment-input-${postId}`);
+      const content = input.value.trim();
+      if (!content) return;
+
+      const submitBtn = event.target.querySelector("button[type='submit']");
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "...";
+
+      try {
+        await createPostComment(postId, content);
+        input.value = "";
+        
+        // Mark as expanded so it stays open when feed reloads
+        expandedPostIds.add(postId);
+        
+        // Refresh feed list to show the new comment
+        await refreshFeedList();
+      } catch (error) {
+        console.error("Comment submit error:", error);
+        alert("Failed to submit comment: " + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    }
+
+    async function handleDeleteComment(commentId, postId) {
+      if (confirm("Are you sure you want to permanently delete this comment?")) {
+        try {
+          await deletePostComment(commentId);
+          
+          // Refresh feed list
+          await refreshFeedList();
+        } catch (error) {
+          console.error("Delete comment error:", error);
+          alert("Failed to delete comment: " + error.message);
+        }
       }
     }
 
@@ -1281,7 +1420,11 @@
 
       } catch (error) {
         console.error("Admin user update fail:", error);
-        alert("Failed updating member: " + error.message);
+        if (error.message && error.message.includes("row-level security policy")) {
+          alert("You do not have permission for this.");
+        } else {
+          alert("Failed updating member: " + error.message);
+        }
       }
     }
 

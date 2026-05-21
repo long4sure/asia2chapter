@@ -353,7 +353,14 @@ async function getStatusFeed() {
     .from('posts')
     .select(`
       *,
-      profiles:user_id (name, alias, picture_url, username)
+      profiles:user_id (name, alias, picture_url, username),
+      post_comments (
+        id,
+        content,
+        created_at,
+        user_id,
+        profiles:user_id (name, alias, picture_url, username)
+      )
     `)
     .order('created_at', { ascending: false });
 
@@ -567,7 +574,8 @@ async function adminUpsertProfile(profile) {
 
   const { data, error } = await client
     .from('profiles')
-    .upsert(profile)
+    .update(profile)
+    .eq('id', profile.id)
     .select();
 
   if (error) throw error;
@@ -745,4 +753,43 @@ async function adminDeleteMessage(id, adminId, adminEmail) {
   if (error) throw error;
 
   await logSystemAction(adminId, adminEmail, 'MESSAGE_DELETE', `Deleted contact message ID: ${id}`);
+}
+
+async function createPostComment(postId, content) {
+  const client = getDbClient();
+  if (!client) throw new Error("Supabase client not initialized.");
+
+  const session = await getCurrentUserSession();
+  if (!session) throw new Error("User not authenticated.");
+
+  const { data, error } = await client
+    .from('post_comments')
+    .insert({
+      post_id: postId,
+      user_id: session.user.id,
+      content: content.trim()
+    })
+    .select();
+
+  if (error) throw error;
+
+  await logSystemAction(session.user.id, session.user.email, 'COMMENT_CREATE', `Created comment on post ${postId}.`);
+  return data;
+}
+
+async function deletePostComment(commentId) {
+  const client = getDbClient();
+  if (!client) throw new Error("Supabase client not initialized.");
+
+  const session = await getCurrentUserSession();
+  if (!session) throw new Error("User not authenticated.");
+
+  const { error } = await client
+    .from('post_comments')
+    .delete()
+    .eq('id', commentId);
+
+  if (error) throw error;
+
+  await logSystemAction(session.user.id, session.user.email, 'COMMENT_DELETE', `Deleted comment ID: ${commentId}.`);
 }

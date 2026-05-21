@@ -215,7 +215,7 @@
         <br><br>
         <span style="color:var(--gold);">Please notify your Chapter officers to approve your account.</span>
       </p>
-      <button type="button" class="btn-gold" onclick="closeOverlayScreen('pendingScreen')" style="width: 100%;">
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('pendingScreen'); switchForm('login'); clearRegistrationFields();" style="width: 100%;">
         Back to Login Screen
       </button>
     </div>
@@ -230,7 +230,7 @@
         Your registration request has been <strong>rejected</strong> by the Chapter Admin.<br>
         If you believe this was an error, please contact the Grand Triskelion or your Batch Leader directly.
       </p>
-      <button type="button" class="btn-gold" onclick="closeOverlayScreen('rejectedScreen')" style="width: 100%;">
+      <button type="button" class="btn-gold" onclick="closeOverlayScreen('rejectedScreen'); switchForm('login'); clearRegistrationFields();" style="width: 100%;">
         Back to Login Screen
       </button>
     </div>
@@ -533,6 +533,10 @@
         // Close OTP modal
         closeOverlayScreen('otpScreen');
         
+        // Direct to login screen and clear fields on registration form
+        switchForm('login');
+        clearRegistrationFields();
+        
         // Open pending approval screen
         showOverlayScreen('pendingScreen');
       } catch (error) {
@@ -540,6 +544,21 @@
         alert("Verification Failed: " + (error.message || "Invalid or expired OTP code."));
         verifyBtn.disabled = false;
         verifyBtn.querySelector(".btn-text").textContent = "Confirm Verification Code →";
+      }
+    }
+
+    function clearRegistrationFields() {
+      const regForm = document.getElementById("registerForm");
+      if (regForm) regForm.reset();
+      
+      const avatarPreview = document.getElementById("avatarPreview");
+      const avatarPlaceholder = document.getElementById("avatarPlaceholder");
+      if (avatarPreview) {
+        avatarPreview.style.display = "none";
+        avatarPreview.src = "";
+      }
+      if (avatarPlaceholder) {
+        avatarPlaceholder.style.display = "block";
       }
     }
 
