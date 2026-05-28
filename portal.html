@@ -694,11 +694,13 @@
       }
 
       // Role
-      if (currentUserProfile.role === 'admin') {
+      if (currentUserProfile.role === 'developer') {
+        sideRole.textContent = "🛠 Developer";
+        sideRole.className = "sidebar-role-badge developer";
+        document.getElementById("tabBtn_admin").style.display = "flex";
+      } else if (currentUserProfile.role === 'admin') {
         sideRole.textContent = "Officer / Admin";
         sideRole.className = "sidebar-role-badge admin";
-        
-        // Show Admin Navigation Button
         document.getElementById("tabBtn_admin").style.display = "flex";
       } else {
         sideRole.textContent = "Brother";
@@ -1226,6 +1228,14 @@
     }
 
     async function loadAdminTab() {
+      const isDev = currentUserProfile.role === 'developer';
+
+      // Developer-only tabs: Manage Users, Manage Posts, System Logs
+      ['users', 'posts', 'logs'].forEach(tabId => {
+        const btn = document.getElementById(`adminSubtabBtn_${tabId}`);
+        if (btn) btn.style.display = isDev ? 'inline-flex' : 'none';
+      });
+
       switchAdminSubtab('approvals');
     }
 
@@ -1733,7 +1743,7 @@
     let hasSeenMessages = false;
 
     async function updateAdminBadges() {
-      if (currentUserProfile && currentUserProfile.role === 'admin') {
+      if (currentUserProfile && (currentUserProfile.role === 'admin' || currentUserProfile.role === 'developer')) {
         try {
           const pending = await adminGetPendingRegistrations();
           const messages = await adminGetAllMessages();
@@ -1863,7 +1873,10 @@
 
       // Role badge
       const roleBadge = document.getElementById("viewProfileRoleBadge");
-      if (p.role === 'admin') {
+      if (p.role === 'developer') {
+        roleBadge.textContent = "🛠 Developer";
+        roleBadge.className = "sidebar-role-badge developer";
+      } else if (p.role === 'admin') {
         roleBadge.textContent = "Officer / Admin";
         roleBadge.className = "sidebar-role-badge admin";
       } else {
@@ -1884,6 +1897,59 @@
           console.error("Logout fail:", e);
           window.location.href = "login.html";
         }
+      }
+    }
+  </script>
+
+  <!-- DATA DISCLAIMER BANNER -->
+  <div id="disclaimerBanner" style="
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 99999;
+    background: rgba(10, 10, 15, 0.97);
+    border-top: 1px solid rgba(201, 168, 76, 0.25);
+    padding: 14px 24px;
+    display: flex; align-items: flex-start; gap: 16px;
+    backdrop-filter: blur(16px);
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.5);
+  ">
+    <div style="flex-shrink:0; margin-top:2px;">
+      <i class="fa-solid fa-triangle-exclamation" style="color:#C9A84C; font-size:18px;"></i>
+    </div>
+    <div style="flex:1; font-size:11px; color:rgba(255,255,255,0.65); line-height:1.65;">
+      <strong style="color:var(--gold); font-family:'Cinzel',serif; font-size:11px; letter-spacing:1px; display:block; margin-bottom:4px;">
+        ⚠ DISCLAIMER &amp; DATA RESPONSIBILITY NOTICE
+      </strong>
+      This portal is for internal use by verified members only. Any information you voluntarily post or share is done at your own discretion.
+      The developer, system administrator, and chapter officers shall <strong style="color:rgba(255,255,255,0.85);">not be held liable</strong> for consequences arising from the exposure or misuse of sensitive information by any user.
+      Do not share passwords, confidential documents, or private data beyond what is necessary for official chapter records.
+    </div>
+    <button onclick="dismissDisclaimer()" style="
+      flex-shrink:0; background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3);
+      color:var(--gold); font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px;
+      padding:7px 14px; border-radius:4px; cursor:pointer; white-space:nowrap;
+      transition: all 0.2s;
+    " onmouseover="this.style.background='rgba(201,168,76,0.2)'" onmouseout="this.style.background='rgba(201,168,76,0.1)'">
+      I Understand ✓
+    </button>
+  </div>
+
+  <script>
+    // Show disclaimer once per session (shared with login page via sessionStorage)
+    (function() {
+      if (!sessionStorage.getItem('disclaimerDismissed')) {
+        setTimeout(() => {
+          const banner = document.getElementById('disclaimerBanner');
+          if (banner) banner.style.transform = 'translateY(0)';
+        }, 1200);
+      }
+    })();
+
+    function dismissDisclaimer() {
+      const banner = document.getElementById('disclaimerBanner');
+      if (banner) {
+        banner.style.transform = 'translateY(100%)';
+        sessionStorage.setItem('disclaimerDismissed', '1');
       }
     }
   </script>

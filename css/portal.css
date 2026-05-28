@@ -61,6 +61,7 @@
 }
 .sidebar-role-badge.user { background: rgba(201, 168, 76, 0.15); color: var(--gold); border: 1px solid var(--gold-dark); }
 .sidebar-role-badge.admin { background: rgba(255, 75, 75, 0.15); color: #ff7e7e; border: 1px solid #c93636; }
+.sidebar-role-badge.developer { background: rgba(0, 210, 190, 0.12); color: #00d2be; border: 1px solid rgba(0, 210, 190, 0.35); }
 
 /* Sidebar Navigation Items */
 .sidebar-menu {
