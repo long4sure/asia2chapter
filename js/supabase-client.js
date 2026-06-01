@@ -178,14 +178,17 @@ async function logSystemAction(userId, userEmail, action, details) {
   if (!client) return;
 
   try {
-    await client.from('logs').insert({
+    const { error } = await client.from('logs').insert({
       user_id: userId || null,
       user_email: userEmail || null,
       action,
       details
     });
+    if (error) {
+      console.error("Failed to insert audit log in database:", error);
+    }
   } catch (e) {
-    console.error("Failed to insert audit log:", e);
+    console.error("Failed to execute logSystemAction:", e);
   }
 }
 
